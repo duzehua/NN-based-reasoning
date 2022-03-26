@@ -8,7 +8,7 @@
 #include "GINFO_VAR.h"
 
 
-void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, CONVSTRIDE *strides, char *pool_mode)
+void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, CONVSTRIDE *strides, char *pool_mode, Tensor *pool_result)
 {
     // 对每个张量, 对每个通道单独卷积, 但应先定义结果张量和结果矩阵, 对每个通道赋值给矩阵, 然后矩阵卷积之后赋值给张量
     int i, j, k, h;
@@ -71,12 +71,18 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, CONVSTRIDE *strides, 
     if (ext_pool_flag == 0)
     {
         //
-
+        TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
+        TENSOR4_SHAPE[1] = conved_Tsr->chnum; 
+        TENSOR4_SHAPE[2] = pool_result_row;  // 输出张量的行数为 conved_Tsr->row + 延拓半宽*2
+        TENSOR4_SHAPE[3] = pool_result_col;  // 输出张量的列数为 conved_Tsr->col + 延拓半宽*2
+        // printf("结果卷积\n");
+        TensorInitial(conv_result, TENSOR4_STR, TENSOR4_SHAPE);
+        TensorPaddingZero(conv_result);
     }
     else
     {
         //
-        
+
     }
     
 
