@@ -4,7 +4,7 @@
     #include "Tensor.h"
     #include "GINFO_VAR.h"
 
-    void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, CONVSTRIDE *strides, char *pool_mode, Tensor *pool_result);
+    void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, char *pool_mode, Tensor *pool_result);
 
 
 

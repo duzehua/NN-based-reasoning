@@ -7,47 +7,45 @@
 #include "Tensor.h"
 #include "GINFO_VAR.h"
 
-
-void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, CONVSTRIDE *strides, char *pool_mode, Tensor *pool_result)
+// ²Î¿¼ http://t.zoukankan.com/ssyfj-p-13964588.html
+void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, char *pool_mode, Tensor *pool_result)
 {
-    // å¯¹æ¯ä¸ªå¼ é‡, å¯¹æ¯ä¸ªé€šé“å•ç‹¬å·ç§¯, ä½†åº”å…ˆå®šä¹‰ç»“æœå¼ é‡å’Œç»“æœçŸ©é˜µ, å¯¹æ¯ä¸ªé€šé“èµ‹å€¼ç»™çŸ©é˜µ, ç„¶åçŸ©é˜µå·ç§¯ä¹‹åèµ‹å€¼ç»™å¼ é‡
+    // ¶ÔÃ¿¸öÕÅÁ¿, ¶ÔÃ¿¸öÍ¨µÀµ¥¶À³Ø»¯, µ«Ó¦ÏÈ¶¨Òå½á¹ûÕÅÁ¿ºÍ½á¹û¾ØÕó, ¶ÔÃ¿¸öÍ¨µÀ¸³Öµ¸ø¾ØÕó, È»ºó¾ØÕó¾í»ıÖ®ºó¸³Öµ¸øÕÅÁ¿
     int i, j, k, h;
-    int ext_pool_flag = 0; // é»˜è®¤ä¸ä½¿ç”¨å¡«0å¼ é‡, å½“SAMEæ¨¡å¼ä¸èƒ½æ•´é™¤æ—¶, ç½®1è¿›è¡Œå•ç‹¬è¿ç®—
+    int ext_pool_flag = 0; // Ä¬ÈÏ²»Ê¹ÓÃÌî0ÕÅÁ¿, µ±SAMEÄ£Ê½²»ÄÜÕû³ıÊ±, ÖÃ1½øĞĞµ¥¶ÀÔËËã
 
-    // æ± åŒ–æ ¸çš„å°ºå¯¸
+    // ³Ø»¯ºËµÄ³ß´ç
     int ck_row = pool_size->row;
     int ck_col = pool_size->col;
 
-    int pool_result_row; // ç»“æœå¼ é‡çš„è¡Œæ•°
-    int pool_result_col; // ç»“æœå¼ é‡çš„åˆ—æ•°
+    int pool_result_row; // ½á¹ûÕÅÁ¿µÄĞĞÊı
+    int pool_result_col; // ½á¹ûÕÅÁ¿µÄÁĞÊı
 
-    int ext_len_row = 0; // å»¶æ‹“å¼ é‡è¡¥0è¡Œå®½
-    int ext_len_col = 0; // å»¶æ‹“å¼ é‡è¡¥0åˆ—å®½
+    int ext_len_row = 0; // ÑÓÍØÕÅÁ¿²¹0ĞĞ¿í
+    int ext_len_col = 0; // ÑÓÍØÕÅÁ¿²¹0ÁĞ¿í
 
-    // æ ¹æ®æ± åŒ–æ¨¡å¼ç¡®å®šç»“æœå¼ é‡çš„å°ºå¯¸, ä»¥åŠè¡¥0çš„ä½å®½
+    // ¸ù¾İ³Ø»¯Ä£Ê½È·¶¨½á¹ûÕÅÁ¿µÄ³ß´ç, ÒÔ¼°²¹0µÄÎ»¿í
     if (strcmp(pool_mode, VALID) == 0)
     {
-        // TODO éœ€ç¡®è®¤
-        pool_result_row = ceil(((conved_Tsr->row) - ck_row) / (strides->row)) + 1;
-        pool_result_col = ceil(((conved_Tsr->col) - ck_col) / (strides->col)) + 1;
+        // TODO ĞèÈ·ÈÏ
+        // ValidÄ£Ê½²»»á²¹0, Òò´Ë¿ÉÄÜ»á³öÏÖÎŞ·¨±éÀúËùÓĞÊäÈëÊı¾İµÄÇé¿ö
+        pool_result_row = (((conved_Tsr->row) - ck_row) / (strides->row)) + 1;
+        pool_result_col = (((conved_Tsr->col) - ck_col) / (strides->col)) + 1;
+        // printf("³Ø»¯½á¹û³ß´ç %d, %d\n", pool_result_row, pool_result_col);
 
-        // // è¡¥0ä¸ªæ•°, é«˜(å®½)å¯ä»¥è¢«æ­¥é•¿æ•´é™¤
-        // if ((((conved_Tsr->row) % (strides->row)) == 0) && (((conved_Tsr->col) % (strides->col)) == 0))
-        // {
-        //     // 
-        //     ext_half_len_row = 
-        // }
     }
     else if (strcmp(pool_mode, SAME) == 0)
     {
-        // TODO éœ€ç¡®è®¤
-        pool_result_row = ceil(((conved_Tsr->row) - ck_row) / (strides->row)) + 1;
-        pool_result_col = ceil(((conved_Tsr->col) - ck_col) / (strides->col)) + 1;
-
+        // TODO ĞèÈ·ÈÏ
+        // SameÄ£Ê½ÔÚ³ı²»¾¡µÄÊ±ºò»á²¹0
+        pool_result_row = (((conved_Tsr->row) - ck_row - 1) / (strides->row) + 1) + 1;
+        pool_result_col = (((conved_Tsr->col) - ck_col - 1) / (strides->col) + 1) + 1;
+        // printf("%d, %d, %d\n", (conved_Tsr->row) - ck_row, ((conved_Tsr->row) - ck_row) / (strides->row), ((conved_Tsr->row) - ck_row) / (strides->row) + 1);
+        // printf("³Ø»¯½á¹û³ß´ç %d, %d\n", pool_result_row, pool_result_col);
         // pool_result_row = ceil(((conved_Tsr->row) - (pool_size->row) + 1) / (strides->row));
         // pool_result_col = ceil(((conved_Tsr->col) - (pool_size->col) + 1) / (strides->col));
 
-        // è¡¥0ä¸ªæ•°, é«˜(å®½)å¯ä»¥è¢«æ­¥é•¿æ•´é™¤
+        // ²¹0¸öÊı, ¸ß(¿í)¿ÉÒÔ±»²½³¤Õû³ı
         int conved_Tsr_mod_stride_row = (((conved_Tsr->row) - ck_row) % (strides->row));
         if (conved_Tsr_mod_stride_row != 0) 
         {
@@ -67,148 +65,185 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, CONVSTRIDE *strides, 
         exit(EXIT_FAILURE);
     }
 
-    // ä¸é€‚ç”¨å»¶æ‹“çŸ©é˜µå‚ä¸è®­ç»ƒ
+    // ²»ÊÊÓÃÑÓÍØ¾ØÕó²ÎÓëÑµÁ·
     if (ext_pool_flag == 0)
     {
-        //
+        // ¶¨Òå½á¹ûÕÅÁ¿µÄ³ß´ç
         TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
         TENSOR4_SHAPE[1] = conved_Tsr->chnum; 
-        TENSOR4_SHAPE[2] = pool_result_row;  // è¾“å‡ºå¼ é‡çš„è¡Œæ•°ä¸º conved_Tsr->row + å»¶æ‹“åŠå®½*2
-        TENSOR4_SHAPE[3] = pool_result_col;  // è¾“å‡ºå¼ é‡çš„åˆ—æ•°ä¸º conved_Tsr->col + å»¶æ‹“åŠå®½*2
-        // printf("ç»“æœå·ç§¯\n");
-        TensorInitial(conv_result, TENSOR4_STR, TENSOR4_SHAPE);
-        TensorPaddingZero(conv_result);
+        TENSOR4_SHAPE[2] = pool_result_row;  // Êä³öÕÅÁ¿µÄĞĞÊıÎª conved_Tsr->row + ÑÓÍØ°ë¿í*2
+        TENSOR4_SHAPE[3] = pool_result_col;  // Êä³öÕÅÁ¿µÄÁĞÊıÎª conved_Tsr->col + ÑÓÍØ°ë¿í*2
+
+        // printf("½á¹û¾í»ı\n");
+        TensorInitial(pool_result, TENSOR4_STR, TENSOR4_SHAPE);
+        // TensorPaddingZero(conv_result);
+
+        // ×î´ó³Ø»¯¾ßÌå¹ı³Ì
+        int cd_i, cd_j, cd_k, cd_h;  // conved_Tsr
+        int pl_k = 0, pl_h = 0;  // pool_result
+        int pl_r, pl_c;  // pool operation  
+        DATA pl_result_tmp = NInf;    
+        // printf("init %f\n", pl_result_tmp);         
+
+        // /*
+        //                              ¸ö    Í¨µÀ  ĞĞ    ÁĞ
+        // ±»³Ø»¯ÕÅÁ¿Ë÷Òı conved_Tsr    [cd_i][cd_j][cd_k][cd_h]
+        // ³Ø»¯½á¹ûË÷Òı   pool_result   [cd_i][cd_j][pl_k][pl_h]
+        // int temp=0;
+        for (cd_i = 0; cd_i < conved_Tsr->tsnum; cd_i++)
+        {
+            // printf("num %d\n", cd_i);
+            for (cd_j = 0; cd_j < conved_Tsr->chnum; cd_j++)
+            {
+                // printf("chnum %d\n", cd_j);
+                // ±éÀúµ±Ç°Í¨µÀ¾ØÕó
+                // ´ÓºËÄ©Î²¿ªÊ¼¼ÆËã, ²½³¤Îª³Ø»¯²½³¤, Ö±µ½±ß½ç
+                pl_k = 0;
+                for (cd_k = (ck_row-1); cd_k < (conved_Tsr->row); cd_k = (cd_k+(strides->row)))
+                {
+                    // printf("cd_k %d\n", cd_k);
+                    pl_h = 0;
+                    for (cd_h = (ck_col-1); cd_h < (conved_Tsr->col); cd_h = (cd_h+(strides->col)))
+                    {
+                        // printf("cd_h %d\n", cd_h);
+
+                        pl_result_tmp = NInf;
+                        // cd_k\cd_h Îª³Ø»¯ºËÓÒÏÂ½ÇµÄ ĞĞ\ÁĞ ×ø±ê, ÏòÉÏ\×ó²Ù×÷
+                        for (pl_r = cd_k; pl_r > (cd_k-ck_row); pl_r--)
+                        {
+                            // printf("pl row %d, cd_k %d\n", pl_r, cd_k);
+                            for (pl_c = cd_h; pl_c > (cd_h-ck_col); pl_c--)
+                            {
+                                // printf("pl col %d, cd_h %d\n", pl_c, cd_h);
+                                // printf("curt %f\n", conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]);
+                                if ((conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]) > pl_result_tmp)
+                                {
+                                    
+                                    pl_result_tmp = (conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]);
+                                    // printf("max %f\n", pl_result_tmp);
+                                }
+                            }
+                        }
+                        // printf("%f\n", pl_result_tmp);
+                        // temp++;
+                        // printf("%d\n", temp);
+                        // printf("[cd_i %d][cd_j %d][pl_k %d][pl_h %d] %f\n", cd_i, cd_j, pl_k, pl_h, pl_result_tmp);
+                        pool_result->data[cd_i][cd_j][pl_k][pl_h] = pl_result_tmp;
+                        pl_h++;
+                    }
+                    pl_k++;
+                }
+            }
+        }
     }
     else
     {
         //
+        // printf("'????????????????????????'");
+        // ¶¨Òå½á¹ûÕÅÁ¿µÄ³ß´ç
+        TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
+        TENSOR4_SHAPE[1] = conved_Tsr->chnum; 
+        TENSOR4_SHAPE[2] = pool_result_row; 
+        TENSOR4_SHAPE[3] = pool_result_col;  
+        // printf("½á¹û¾í»ı\n");
+        TensorInitial(pool_result, TENSOR4_STR, TENSOR4_SHAPE);
 
+        Tensor conved_Tsr_Tmp;
+        TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
+        TENSOR4_SHAPE[1] = conved_Tsr->chnum; 
+        TENSOR4_SHAPE[2] = conved_Tsr->row + ext_len_row; 
+        TENSOR4_SHAPE[3] = conved_Tsr->col + ext_len_col;  
+        printf("%d, %d, %d, %d\n", TENSOR4_SHAPE[0], TENSOR4_SHAPE[1], TENSOR4_SHAPE[2], TENSOR4_SHAPE[3]);
+        TensorInitial(&conved_Tsr_Tmp, TENSOR4_STR, TENSOR4_SHAPE);
+        TensorPaddingZero(&conved_Tsr_Tmp);
+        for (i = 0; i < (conved_Tsr->tsnum); i++)
+        {
+            for (j = 0; j < (conved_Tsr->chnum); j++)
+            {
+                for (k = 0; k < (conved_Tsr->row); k++)
+                {
+                    for (h = 0; h < (conved_Tsr->col); h++)
+                    {
+                        // printf("[%d][%d][%d][%d]\n", i, j, k + ext_half_len, h + ext_half_len);
+                        conved_Tsr_Tmp.data[i][j][k][h] = conved_Tsr->data[i][j][k][h];
+                    }
+                }
+            }
+        }
+
+        // for (i=0;i<conved_Tsr_Tmp.tsnum;i++)
+        // {
+        //     printf("³Ø»¯ÖĞ¼ä¸ö %d ============================================\n", i);
+        //     for (j=0;j<conved_Tsr_Tmp.chnum;j++)
+        //     {
+        //         printf("³Ø»¯ÖĞ¼äÍ¨µÀ %d ------------------------------------------\n", j);
+        //         for (k = 0; k < conved_Tsr_Tmp.row; k++)
+        //         {
+        //             for (h = 0; h < conved_Tsr_Tmp.col; h++)
+        //             {
+        //                 printf("%f, ", conved_Tsr_Tmp.data[i][j][k][h]);
+        //             }
+        //             printf("\n");
+        //         }
+        //         printf("\n\n");
+        //     }
+        //     printf("\n\n\n");
+        // }
+
+        // ×î´ó³Ø»¯¾ßÌå¹ı³Ì
+        int cd_i, cd_j, cd_k, cd_h;  // conved_Tsr
+        int pl_k = 0, pl_h = 0;  // pool_result
+        int pl_r, pl_c;  // pool operation  
+        DATA pl_result_tmp = NInf;    
+
+        for (cd_i = 0; cd_i < conved_Tsr_Tmp.tsnum; cd_i++)
+        {
+            // printf("num %d\n", cd_i);
+            for (cd_j = 0; cd_j < conved_Tsr_Tmp.chnum; cd_j++)
+            {
+                // printf("chnum %d\n", cd_j);
+                // ±éÀúµ±Ç°Í¨µÀ¾ØÕó
+                // ´ÓºËÄ©Î²¿ªÊ¼¼ÆËã, ²½³¤Îª³Ø»¯²½³¤, Ö±µ½±ß½ç
+                pl_k = 0;
+                for (cd_k = (ck_row-1); cd_k < (conved_Tsr_Tmp.row); cd_k = (cd_k+(strides->row)))
+                {
+                    // printf("cd_k %d\n", cd_k);
+                    pl_h = 0;
+                    for (cd_h = (ck_col-1); cd_h < (conved_Tsr_Tmp.col); cd_h = (cd_h+(strides->col)))
+                    {
+                        // printf("cd_h %d\n", cd_h);
+
+                        pl_result_tmp = NInf;
+                        // cd_k\cd_h Îª³Ø»¯ºËÓÒÏÂ½ÇµÄ ĞĞ\ÁĞ ×ø±ê, ÏòÉÏ\×ó²Ù×÷
+                        for (pl_r = cd_k; pl_r > (cd_k-ck_row); pl_r--)
+                        {
+                            // printf("pl row %d, cd_k %d, cd_h %d, cd_h-ck_col %d\n", pl_r, cd_k, cd_h, (cd_h-ck_col));
+                            for (pl_c = cd_h; pl_c > (cd_h-ck_col); pl_c--)
+                            {
+                            //     printf("pl col %d, cd_h %d\n", pl_c, cd_h);
+                            //     printf("curt %f\n", conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]);
+                                if ((conved_Tsr_Tmp.data[cd_i][cd_j][pl_r][pl_c]) > pl_result_tmp)
+                                {
+                                    
+                                    pl_result_tmp = (conved_Tsr_Tmp.data[cd_i][cd_j][pl_r][pl_c]);
+                                    // printf("max %f\n", pl_result_tmp);
+                                }
+                                // printf("%f\n", conved_Tsr_Tmp.data[cd_i][cd_j][pl_r][pl_c]);
+                            }
+                        }
+                        // printf("%f\n", pl_result_tmp);
+                        // temp++;
+                        // printf("%d\n", temp);
+                        // printf("[cd_i %d][cd_j %d][pl_k %d][pl_h %d] %f\n", cd_i, cd_j, pl_k, pl_h, pl_result_tmp);
+                        pool_result->data[cd_i][cd_j][pl_k][pl_h] = pl_result_tmp;
+                        // printf("%d, %d\n", pl_k, pl_h);
+                        pl_h++;
+                    }
+                    pl_k++;
+                }
+            }
+        }
+        TensorFree(&conved_Tsr_Tmp);
     }
-    
-
-    // æ± åŒ–ç»“æœçš„è¡Œ(åˆ—)æ•°å¤§äºè¾“å…¥å¼ é‡çš„è¡Œ(åˆ—)æ•°, ç¡®å®šå»¶æ‹“åŠå®½
-    // if ((pool_result_row > (conved_Tsr->row)) || (pool_result_col > (conved_Tsr->col)))
-    // {
-    //     /* code */
-    //     ext_half_len = 
-    // }
-    
-    // printf("å»¶æ‹“åŠå®½: %d\n", ext_half_len);
-
-    // // å¤åˆ¶ conved_Tsr åˆ° extend_tensor ç”¨äºå®é™…è¿ç®—
-    // Tensor extend_tensor;
-    // TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
-    // TENSOR4_SHAPE[1] = conved_Tsr->chnum;
-    // TENSOR4_SHAPE[2] = (conved_Tsr->row) + (ext_half_len<<1);
-    // TENSOR4_SHAPE[3] = (conved_Tsr->col) + (ext_half_len<<1);
-    // // printf("å»¶æ‹“å¢å®½é‡ %d\n", ext_half_len<<1);
-    // // printf("å»¶æ‹“å¼ é‡\n");
-    // TensorInitial(&extend_tensor, TENSOR4_STR, TENSOR4_SHAPE);
-    // TensorPaddingZero(&extend_tensor);
-
-    // for (i = 0; i < (conved_Tsr->tsnum); i++)
-    // {
-    //     for (j = 0; j < (conved_Tsr->chnum); j++)
-    //     {
-    //         for (k = 0; k < (conved_Tsr->row); k++)
-    //         {
-    //             for (h = 0; h < (conved_Tsr->col); h++)
-    //             {
-    //                 // printf("[%d][%d][%d][%d]\n", i, j, k + ext_half_len, h + ext_half_len);
-    //                 extend_tensor.data[i][j][k + ext_half_len][h + ext_half_len] = conved_Tsr->data[i][j][k][h];
-    //             }
-    //         }
-    //     }
-    // }
-
-    // // for (i=0;i<extend_tensor.tsnum;i++)
-    // // {
-    // //     printf("ä¸ªæ•° %d ============================================\n", i);
-    // //     for (j=0;j<extend_tensor.chnum;j++)
-    // //     {
-    // //         printf("é€šé“ %d ------------------------------------------\n", j);
-    // //         for (k = 0; k < extend_tensor.row; k++)
-    // //         {
-    // //             for (h = 0; h < extend_tensor.col; h++)
-    // //             {
-    // //                 printf("%f, ", extend_tensor.data[i][j][k][h]);
-    // //             }
-    // //             printf("\n");
-    // //         }
-    // //         printf("\n\n");
-    // //     }
-    // //     printf("\n\n\n");
-    // // }
-
-    // // æ± åŒ–ç»“æœå¼ é‡<æ ¹æ®æ± åŒ–æ ¸ä¸æ­¥é•¿å†³å®š>
-    // // å‚è€ƒ: https://zhuanlan.zhihu.com/p/46744988?ivk_sa=1024320u
-    // TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
-    // TENSOR4_SHAPE[1] = conved_Tsr->chnum;  // è¾“å‡ºå¼ é‡çš„é€šé“ä¸å·ç§¯æ ¸é€šé“æ•°ä¸€è‡´
-    // TENSOR4_SHAPE[2] = floor(((conved_Tsr->row) + (ext_half_len<<1) - ck_row) / conv_stride->row) + 1;  // è¾“å‡ºå¼ é‡çš„è¡Œæ•°ä¸º conved_Tsr->row + å»¶æ‹“åŠå®½*2
-    // TENSOR4_SHAPE[3] = floor(((conved_Tsr->col) + (ext_half_len<<1) - ck_row) / conv_stride->col) + 1;  // è¾“å‡ºå¼ é‡çš„åˆ—æ•°ä¸º conved_Tsr->col + å»¶æ‹“åŠå®½*2
-    // // printf("ç»“æœå·ç§¯\n");
-    // TensorInitial(conv_result, TENSOR4_STR, TENSOR4_SHAPE);
-    // TensorPaddingZero(conv_result);
-
-    // int cd_i, cd_j, cd_k, cd_h;  // conved_Tsr
-    // int ck_i, ck_j, ck_k, ck_h;  // conv_kel
-    // int rs_i, rs_j, rs_k, rs_h;  // conv_result
-    // int et_i, et_j, et_k, et_h;  // extend_mat
-
-    // /*
-    //                             ä¸ª   é€šé“   è¡Œ    åˆ—
-    // è¢«å·ç§¯å¼ é‡ç´¢å¼• conved_Tsr    [cd_i][cd_j][cd_k][cd_h]
-    // å·ç§¯æ ¸ç´¢å¼•     conv_kel      [0   ][ck_j][ck_k][ck_h]
-    // å·ç§¯ç»“æœç´¢å¼•   conv_result   [rs_i][rs_j][rs_k][rs_h]
-    // æ‹“å±•å·ç§¯ç´¢å¼•   extend_tensor [et_i][et_j][et_k][et_h]
-    // */    
-    // // å‚è€ƒ: https://www.cnblogs.com/chumingqian/articles/11495364.html
-    // // æ¯ä¸ªå·ç§¯æ ¸é€šé“å¯¹åº”1ä¸ªè¾“å‡º
-    // // TODO å¯å¹¶è¡Œå¤„ç†
-    // // TODO éœ€è¦ç¡®å®š conv_stride æ”¾ç½®ä½ç½®æ˜¯å¦æ­£ç¡®
-    // // printf("%d\n", conv_stride->row);
-    // // #pragma omp parallel for num_threads(6)
-    // for (cd_i = 0; cd_i < conved_Tsr->tsnum; cd_i++)   // éå†"è¢«å·ç§¯"ä¸ªæ•° => å¯¹åº”å®é™…è¾“å‡ºçš„ä¸ªæ•°
-    // {
-    //     // printf("level - 1\n");
-    //     for (ck_j = 0; ck_j < conv_kel->chnum; ck_j++) // éå†"å·ç§¯æ ¸"é€šé“ => å¯¹åº”å®é™…è¾“å‡ºé€šé“æ•°
-    //     {
-    //         // printf("level - 2\n");
-    //         // æ¯é€šé“\è¡Œ\åˆ—,å¯¹åº”çš„æ ¸å¤§å°å†…å®¹è¿›è¡Œå·ç§¯, ç„¶åå¾ªç¯å¤– + bias
-    //         for (cd_k = 0; cd_k < conv_result->row; cd_k++)     // éå†"å·ç§¯ç»“æœå¼ é‡"è¡Œ => å¯¹åº”å®é™…è¾“å‡ºè¡Œ (+æ­¥é•¿)
-    //         {
-    //             // printf("level - 3\n");
-    //             for (cd_h = 0; cd_h < conv_result->col; cd_h++) // éå†"å·ç§¯ç»“æœå¼ é‡"åˆ— => å¯¹åº”å®é™…è¾“å‡ºåˆ— (+æ­¥é•¿)
-    //             {
-    //                 // printf("level - 4\n");
-    //                 for (cd_j = 0; cd_j < conved_Tsr->chnum; cd_j++)     // éå†"è¢«å·ç§¯å¼ é‡"é€šé“
-    //                 {
-    //                     // printf("level - 5\n");
-    //                     // å½“å‰ç‚¹ä¸ºæ ¸ä¸­å¿ƒ, å¯¹åº”çš„æ ¸å¤§å°å¼ é‡æ•°æ®, å·ç§¯
-    //                     // += extend_tensor.data[cd_i][cd_j][æ ¸èŒƒå›´][æ ¸èŒƒå›´] .* conv_kel->data[0][ck_j][æ ¸èŒƒå›´][æ ¸èŒƒå›´]
-    //                     for (ck_k = 0; ck_k < conv_kel->row; ck_k++)     // éå†"å·ç§¯æ ¸"è¡Œ
-    //                     {
-    //                         // #pragma omp parallel 
-    //                         // printf("level - 6\n");
-    //                         for (ck_h = 0; ck_h < conv_kel->col; ck_h++) // éå†"å·ç§¯æ ¸"åˆ—
-    //                         {
-    //                             // printf("level - 7\n");
-    //                             // printf("[%d][%d][%d][%d]\n", conved_Tsr->tsnum, conv_kel->chnum, conv_result->row, conv_result->col);
-    //                             // printf("[%d][%d][%d][%d]\n", cd_i, ck_j, cd_k, cd_h);
-    //                             // printf("[%d][%d][%d][%d] => %f\n", cd_i, cd_j, cd_k + ck_k, cd_h + ck_h, extend_tensor.data[cd_i][cd_j][cd_k + ck_k][cd_h + ck_h]);
-    //                             conv_result->data[cd_i][ck_j][cd_k][cd_h] += (extend_tensor.data[cd_i][cd_j][cd_k*(conv_stride->row) + ck_k][cd_h*(conv_stride->col) + ck_h] * conv_kel->data[0][ck_j][ck_k][ck_h]);
-    //                         }
-    //                     }
-    //                 }
-    //                 // TODO åŠ åç½®, éœ€ç¡®å®šæ˜¯å¦å¯¹å®Œæ•´æ ¸å·ç§¯åŠ ä¸€æ¬¡åç½®
-    //                 // å‚è€ƒ: https://poloclub.github.io/cnn-explainer/
-    //                 conv_result->data[cd_i][ck_j][cd_k][cd_h] += conv_bias->data[ck_j]; // 1ä¸ªæ ¸è¾“å‡ºé€šé“å¯¹åº”ä¸€ä¸ªå·ç§¯
-    //             }
-    //         }
-    //     }
-        
-    // }
-
-    // TensorFree(&extend_tensor);
     
 }

@@ -11,5 +11,9 @@
     // 卷积模式
     #define CONVMODE char
 
+    // 正负无穷
+    #define NInf -1e6 
+    // #define Inf  0x3f3f3f3f 
+
 
 #endif

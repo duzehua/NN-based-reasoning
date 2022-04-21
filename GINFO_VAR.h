@@ -39,4 +39,16 @@
         int col;     /*!<池化核列数>*/
     }POOLSIZE;
 
+    /**
+    * @池化步长
+    * @details 需在main函数中起始位置定义, 并赋初始值. 在池化操作前通过该结构体定义池化步长并作为实参传入池化运算函数.
+    */
+    typedef struct
+    {
+        // int batch;   /*!<样本滑动步长>*/
+        // int channel; /*!<通道滑动步长>*/
+        int row;     /*!<行滑动步长>*/
+        int col;     /*!<列滑动步长>*/
+    }POOLSTRIDE;
+
 #endif
