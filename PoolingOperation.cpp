@@ -8,6 +8,20 @@
 #include "GINFO_VAR.h"
 
 // 参考 http://t.zoukankan.com/ssyfj-p-13964588.html
+/**
+* 最大池化
+* 说明: 根据输入的池化参数进行最大池化操作.
+* @param[in]  conved_Tsr   -> 被池化张量结构体
+* @param[in]  pool_size    -> 池化核尺寸
+* @param[in]  strides      -> 池化核步长
+* @param[in]  pool_mode    -> 池化模式 [VALID \ SAME]
+* @param[in]  pool_result  -> 池化结果张量
+* @param[out] Null
+* @retval Null
+* @par Null
+* Built-By: Zehua Du
+* Date: Apr. 21, 2022  
+*/
 void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, char *pool_mode, Tensor *pool_result)
 {
     // 对每个张量, 对每个通道单独池化, 但应先定义结果张量和结果矩阵, 对每个通道赋值给矩阵, 然后矩阵卷积之后赋值给张量
@@ -40,10 +54,6 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
         // Same模式在除不尽的时候会补0
         pool_result_row = (((conved_Tsr->row) - ck_row - 1) / (strides->row) + 1) + 1;
         pool_result_col = (((conved_Tsr->col) - ck_col - 1) / (strides->col) + 1) + 1;
-        // printf("%d, %d, %d\n", (conved_Tsr->row) - ck_row, ((conved_Tsr->row) - ck_row) / (strides->row), ((conved_Tsr->row) - ck_row) / (strides->row) + 1);
-        // printf("池化结果尺寸 %d, %d\n", pool_result_row, pool_result_col);
-        // pool_result_row = ceil(((conved_Tsr->row) - (pool_size->row) + 1) / (strides->row));
-        // pool_result_col = ceil(((conved_Tsr->col) - (pool_size->col) + 1) / (strides->col));
 
         // 补0个数, 高(宽)可以被步长整除
         int conved_Tsr_mod_stride_row = (((conved_Tsr->row) - ck_row) % (strides->row));
@@ -82,52 +92,37 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
         int cd_i, cd_j, cd_k, cd_h;  // conved_Tsr
         int pl_k = 0, pl_h = 0;  // pool_result
         int pl_r, pl_c;  // pool operation  
-        DATA pl_result_tmp = NInf;    
-        // printf("init %f\n", pl_result_tmp);         
+        DATA pl_result_tmp = NInf;         
 
-        // /*
         //                              个    通道  行    列
         // 被池化张量索引 conved_Tsr    [cd_i][cd_j][cd_k][cd_h]
         // 池化结果索引   pool_result   [cd_i][cd_j][pl_k][pl_h]
         // int temp=0;
         for (cd_i = 0; cd_i < conved_Tsr->tsnum; cd_i++)
         {
-            // printf("num %d\n", cd_i);
             for (cd_j = 0; cd_j < conved_Tsr->chnum; cd_j++)
             {
-                // printf("chnum %d\n", cd_j);
                 // 遍历当前通道矩阵
                 // 从核末尾开始计算, 步长为池化步长, 直到边界
                 pl_k = 0;
                 for (cd_k = (ck_row-1); cd_k < (conved_Tsr->row); cd_k = (cd_k+(strides->row)))
                 {
-                    // printf("cd_k %d\n", cd_k);
                     pl_h = 0;
                     for (cd_h = (ck_col-1); cd_h < (conved_Tsr->col); cd_h = (cd_h+(strides->col)))
                     {
-                        // printf("cd_h %d\n", cd_h);
-
                         pl_result_tmp = NInf;
                         // cd_k\cd_h 为池化核右下角的 行\列 坐标, 向上\左操作
                         for (pl_r = cd_k; pl_r > (cd_k-ck_row); pl_r--)
                         {
-                            // printf("pl row %d, cd_k %d\n", pl_r, cd_k);
                             for (pl_c = cd_h; pl_c > (cd_h-ck_col); pl_c--)
                             {
-                                // printf("pl col %d, cd_h %d\n", pl_c, cd_h);
-                                // printf("curt %f\n", conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]);
                                 if ((conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]) > pl_result_tmp)
                                 {
                                     
                                     pl_result_tmp = (conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]);
-                                    // printf("max %f\n", pl_result_tmp);
                                 }
                             }
                         }
-                        // printf("%f\n", pl_result_tmp);
-                        // temp++;
-                        // printf("%d\n", temp);
-                        // printf("[cd_i %d][cd_j %d][pl_k %d][pl_h %d] %f\n", cd_i, cd_j, pl_k, pl_h, pl_result_tmp);
                         pool_result->data[cd_i][cd_j][pl_k][pl_h] = pl_result_tmp;
                         pl_h++;
                     }
@@ -138,8 +133,6 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
     }
     else
     {
-        //
-        // printf("'????????????????????????'");
         // 定义结果张量的尺寸
         TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
         TENSOR4_SHAPE[1] = conved_Tsr->chnum; 
@@ -153,7 +146,7 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
         TENSOR4_SHAPE[1] = conved_Tsr->chnum; 
         TENSOR4_SHAPE[2] = conved_Tsr->row + ext_len_row; 
         TENSOR4_SHAPE[3] = conved_Tsr->col + ext_len_col;  
-        printf("%d, %d, %d, %d\n", TENSOR4_SHAPE[0], TENSOR4_SHAPE[1], TENSOR4_SHAPE[2], TENSOR4_SHAPE[3]);
+        // printf("%d, %d, %d, %d\n", TENSOR4_SHAPE[0], TENSOR4_SHAPE[1], TENSOR4_SHAPE[2], TENSOR4_SHAPE[3]);
         TensorInitial(&conved_Tsr_Tmp, TENSOR4_STR, TENSOR4_SHAPE);
         TensorPaddingZero(&conved_Tsr_Tmp);
         for (i = 0; i < (conved_Tsr->tsnum); i++)
@@ -171,24 +164,6 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
             }
         }
 
-        // for (i=0;i<conved_Tsr_Tmp.tsnum;i++)
-        // {
-        //     printf("池化中间个 %d ============================================\n", i);
-        //     for (j=0;j<conved_Tsr_Tmp.chnum;j++)
-        //     {
-        //         printf("池化中间通道 %d ------------------------------------------\n", j);
-        //         for (k = 0; k < conved_Tsr_Tmp.row; k++)
-        //         {
-        //             for (h = 0; h < conved_Tsr_Tmp.col; h++)
-        //             {
-        //                 printf("%f, ", conved_Tsr_Tmp.data[i][j][k][h]);
-        //             }
-        //             printf("\n");
-        //         }
-        //         printf("\n\n");
-        //     }
-        //     printf("\n\n\n");
-        // }
 
         // 最大池化具体过程
         int cd_i, cd_j, cd_k, cd_h;  // conved_Tsr
@@ -198,45 +173,30 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
 
         for (cd_i = 0; cd_i < conved_Tsr_Tmp.tsnum; cd_i++)
         {
-            // printf("num %d\n", cd_i);
             for (cd_j = 0; cd_j < conved_Tsr_Tmp.chnum; cd_j++)
             {
-                // printf("chnum %d\n", cd_j);
                 // 遍历当前通道矩阵
                 // 从核末尾开始计算, 步长为池化步长, 直到边界
                 pl_k = 0;
                 for (cd_k = (ck_row-1); cd_k < (conved_Tsr_Tmp.row); cd_k = (cd_k+(strides->row)))
                 {
-                    // printf("cd_k %d\n", cd_k);
                     pl_h = 0;
                     for (cd_h = (ck_col-1); cd_h < (conved_Tsr_Tmp.col); cd_h = (cd_h+(strides->col)))
                     {
-                        // printf("cd_h %d\n", cd_h);
-
                         pl_result_tmp = NInf;
                         // cd_k\cd_h 为池化核右下角的 行\列 坐标, 向上\左操作
                         for (pl_r = cd_k; pl_r > (cd_k-ck_row); pl_r--)
                         {
-                            // printf("pl row %d, cd_k %d, cd_h %d, cd_h-ck_col %d\n", pl_r, cd_k, cd_h, (cd_h-ck_col));
                             for (pl_c = cd_h; pl_c > (cd_h-ck_col); pl_c--)
                             {
-                            //     printf("pl col %d, cd_h %d\n", pl_c, cd_h);
-                            //     printf("curt %f\n", conved_Tsr->data[cd_i][cd_j][pl_r][pl_c]);
                                 if ((conved_Tsr_Tmp.data[cd_i][cd_j][pl_r][pl_c]) > pl_result_tmp)
                                 {
                                     
                                     pl_result_tmp = (conved_Tsr_Tmp.data[cd_i][cd_j][pl_r][pl_c]);
-                                    // printf("max %f\n", pl_result_tmp);
                                 }
-                                // printf("%f\n", conved_Tsr_Tmp.data[cd_i][cd_j][pl_r][pl_c]);
                             }
                         }
-                        // printf("%f\n", pl_result_tmp);
-                        // temp++;
-                        // printf("%d\n", temp);
-                        // printf("[cd_i %d][cd_j %d][pl_k %d][pl_h %d] %f\n", cd_i, cd_j, pl_k, pl_h, pl_result_tmp);
                         pool_result->data[cd_i][cd_j][pl_k][pl_h] = pl_result_tmp;
-                        // printf("%d, %d\n", pl_k, pl_h);
                         pl_h++;
                     }
                     pl_k++;
@@ -245,5 +205,4 @@ void MaxPooling2D(Tensor *conved_Tsr, POOLSIZE *pool_size, POOLSTRIDE *strides, 
         }
         TensorFree(&conved_Tsr_Tmp);
     }
-    
 }

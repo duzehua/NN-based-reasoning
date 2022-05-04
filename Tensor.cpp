@@ -250,7 +250,7 @@ void TensorPaddingZero(Tensor *tensor_data)
             {
                 for (h = 0; h < (tensor_data->col); h++)
                 {
-                    tensor_data->data[i][j][k][h] = 0;
+                    tensor_data->data[i][j][k][h] = DATA_0;
                 }
             }
         }
@@ -371,7 +371,7 @@ void ArrayInitial(Array *arr_data, int len)
     // ³õÊ¼»¯Îª0
     for (int i = 0; i < len; i++)
     {
-        arr_data->data[i] = 0;
+        arr_data->data[i] = DATA_0;
     }
     
 	arr_data->len = len;

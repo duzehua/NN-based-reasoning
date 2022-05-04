@@ -20,6 +20,7 @@
 #include "ConvOperation.h"
 #include "ActivationFunction.h"
 #include "PoolingOperation.h"
+#include "FullyConnectedFunction.h"
 // ==========================
 
 // #include <omp.h>
@@ -179,7 +180,7 @@ int main()
     //     printf("\n\n\n");
     // }
 
-    printf("开始池化");
+    // printf("开始池化");
     Tensor pool_result;
     MaxPooling2D(&tensor4, &pool_size, &pool_stride, SAME, &pool_result);
     // MaxPooling2D(&tensor4, &pool_size, &pool_stride, SAME, &pool_result);
@@ -203,6 +204,19 @@ int main()
         printf("\n\n\n");
     }
     printf("结束池化");
+
+    Tensor flatten_Data;
+    TensorFlatten(&pool_result, &flatten_Data);
+    for (i=0;i<flatten_Data.row;i++)
+    {
+        printf("个 %d ============================================\n", i);
+        for (j=0;j<flatten_Data.col;j++)
+        {
+
+                    printf("%f, ", flatten_Data.data[0][0][i][j]);
+        }
+        printf("\n");
+    }
 
 
     TensorFree(&tensor4);

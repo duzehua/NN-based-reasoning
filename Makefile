@@ -1,6 +1,6 @@
-main:Tensor.o ConvOperation.o ActivationFunction.o PoolingOperation.o GINFO_VAR.o main.o 
+main:Tensor.o ConvOperation.o ActivationFunction.o PoolingOperation.o FullyConnectedFunction.o GINFO_VAR.o main.o 
 # g++ -fopenmp Tensor.o ConvOperation.o ActivationFunction.o GINFO_VAR.o main.o -o main
-	gcc Tensor.o ConvOperation.o ActivationFunction.o PoolingOperation.o GINFO_VAR.o main.o -o main
+	gcc Tensor.o ConvOperation.o ActivationFunction.o PoolingOperation.o FullyConnectedFunction.o GINFO_VAR.o main.o -o main
 
 # 功能函数----------------------
 
@@ -19,6 +19,9 @@ ActivationFunction.o:ActivationFunction.cpp
 PoolingOperation.o:PoolingOperation.cpp
 # g++ -fopenmp -c ActivationFunction.cpp
 	gcc -c PoolingOperation.cpp
+
+FullyConnectedFunction.o:FullyConnectedFunction.cpp
+	gcc -c FullyConnectedFunction.cpp
 
 # 全局参数----------------------
 
