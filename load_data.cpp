@@ -1,0 +1,121 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <malloc.h>
+#include <string.h>
+
+#include "load_data.h"
+#include "GINFO_VAR.h"
+
+/**
+ * @brief 从csv文件加载权重数据到Tensor
+ * 
+ * @param filename 
+ * @param tensor_data 
+ * @param ts_shape 
+ * @param ts_type 
+ */
+void loadweight_csv2tensor(char const *filename, Tensor *tensor_data, int *ts_shape, char *ts_type)
+{
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "fopen() failed.\n");
+        exit(EXIT_FAILURE);
+    }
+    char col_max[102400];    //csv文件数据最大列数，尽可能大（一个权重占22个字符左右，一个张量的所有权重放在一行）
+    char *token;
+
+    int tsnum,chnum,row,col;
+    if (strcmp(ts_type, TENSOR2_STR) == 0)
+    {
+        tsnum = 1;    //tsnum
+        chnum = 1;    //chnum
+        row = ts_shape[2];    //row
+        col = ts_shape[3];    //col
+    }
+    else if (strcmp(ts_type, TENSOR3_STR) == 0)
+    {
+        tsnum = 1;    //tsnum
+        chnum = ts_shape[1];    //chnum
+        row = ts_shape[2];    //row
+        col = ts_shape[3];    //col
+    }
+    else if (strcmp(ts_type, TENSOR4_STR) == 0)
+    {
+        tsnum = ts_shape[0];    //tsnum
+        chnum = ts_shape[1];    //chnum
+        row = ts_shape[2];    //row
+        col = ts_shape[3];    //col
+    }
+    else
+    {
+        fprintf(stderr, "ERROR: TensorType => (%s not in [matrix, tensor3d, tensor4d])\n", ts_type);
+        exit(EXIT_FAILURE);
+    }
+
+    //将csV中权重数据加载到tensor
+    int i,j,k,l;
+    i = j = k = l = 0;
+    while (fgets(col_max, 102400, fp) != NULL && i < tsnum) 
+    {
+        // printf("Col: %s", col);
+        token = strtok(col_max,",");
+        j = 0;
+        while (token != NULL && j < chnum) 
+        {
+            token = strtok(NULL, ",");
+            k = 0;
+            while(token != NULL && k < row)  
+            {
+                token = strtok(NULL, ",");
+                l = 0;
+                while(token != NULL && l < col)
+                {
+                    printf("Token: %s\n", token);
+                    tensor_data->data[i][j][k][l] = strtod(token, NULL);
+                    printf("%d %d %d %d: %.19f\n", i, j, k, l, tensor_data->data[i][j][k][l]);
+                    l++;
+                    token = strtok(NULL, ",");
+                }
+                k++;
+            }
+            j++;
+        }
+        i++;
+    }
+
+    fclose(fp);
+
+}
+
+/**
+ * @brief 从csv文件加载偏置数据到Array
+ * 
+ * @param filename 
+ * @param arr_data 
+ * @param len 
+ */
+void loadbias_csv2array(char const *filename, Array *arr_data, int len)
+{
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "fopen() failed.\n");
+        exit(EXIT_FAILURE);
+    }
+    char col_max[100]; //偏置数据每个张量只有一个，一个只占一行
+    char *token;
+
+    int i = 0;
+    while(fgets(col_max, 100, fp) != NULL)
+    {
+        token = strtok(col_max,",");
+        while(token != NULL && i < len)
+        {
+            printf("Token: %s\n", token);
+            arr_data->data[i] = strtod(token, NULL);
+            printf("%d : %.19f\n", i, arr_data->data[i]);
+            token = strtok(NULL, ",");
+        }
+        i++;
+    }
+    fclose(fp);
+}
