@@ -3,9 +3,9 @@
 
 #include "Tensor.h"
 
-void loadweight_csv2tensor(char *filename, Tensor *tensor_data, int *ts_shape, char *ts_type);
+void loadweight_csv2tensor(char const *filename, Tensor *tensor_data, int *ts_shape, char *ts_type);
 
-void loadbias_csv2array(char *filename, Array *arr_data, int len);
+void loadbias_csv2array(char const *filename, Array *arr_data, int len);
 
 
 #endif
