@@ -14,7 +14,7 @@
  * @param ts_shape 
  * @param ts_type 
  */
-void loadweight_csv2tensor(char const *filename, Tensor *tensor_data, int *ts_shape, char *ts_type)
+void loadweight_csv2tensor(const char *filename, Tensor *tensor_data, int *ts_shape, char *ts_type)
 {
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
@@ -57,16 +57,13 @@ void loadweight_csv2tensor(char const *filename, Tensor *tensor_data, int *ts_sh
     i = j = k = l = 0;
     while (fgets(col_max, 102400, fp) != NULL && i < tsnum) 
     {
-        // printf("Col: %s", col);
         token = strtok(col_max,",");
         j = 0;
         while (token != NULL && j < chnum) 
         {
-            token = strtok(NULL, ",");
             k = 0;
             while(token != NULL && k < row)  
             {
-                token = strtok(NULL, ",");
                 l = 0;
                 while(token != NULL && l < col)
                 {
@@ -88,13 +85,51 @@ void loadweight_csv2tensor(char const *filename, Tensor *tensor_data, int *ts_sh
 }
 
 /**
+ * @brief 从csv文件加载全连接层的权重到Matrix
+ * 
+ * @param filename 
+ * @param matrix 
+ */
+void loadFCweight_csv2Matrix(const char *filename, Matrix *mat_data)
+{
+    FILE *fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "fopen() failed.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    int row = mat_data->row;
+    int col = mat_data->col;
+    char col_max[102400];
+    char *token;
+    int i, j;
+    i = j = 0;
+	while (fgets(col_max, 102400, fp) != NULL) {
+        token = strtok(col_max,",");
+        while(token != NULL && i < row)  
+        {
+            j = 0;
+            while (token != NULL && j < col) {
+                printf("Token: %s\n", token);
+                mat_data->data[i][j] = strtod(token, NULL);
+                printf("%d %d : %.19f\n", i, j, mat_data->data[i][j]);
+                j++;
+                token = strtok(NULL, ",");
+            }
+            i++;
+        }
+
+    }
+}
+
+/**
  * @brief 从csv文件加载偏置数据到Array
  * 
  * @param filename 
  * @param arr_data 
  * @param len 
  */
-void loadbias_csv2array(char const *filename, Array *arr_data, int len)
+void loadbias_csv2array(const char *filename, Array *arr_data, int len)
 {
     FILE *fp = fopen(filename, "r");
     if (fp == NULL) {
