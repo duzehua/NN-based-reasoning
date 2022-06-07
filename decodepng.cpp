@@ -600,10 +600,11 @@ void getPixeldata(const char* filename, Tensor *tensor_data)
 
   /*loop discription:
   n: 0                     1        2          3            4            5            6
+    (R     G     B  Alpha  R G B A  R G B A...)
   i: 0     1     2     3,  4 5 6 7, 8 9 10 11, 12 13 14 15, 16 17 18 19, 20 21 22 23, 24 25....
     4*n  4*n+1 4*n+2 4*n+3(dicard) 
   */
-  for( n=0; n <28*28; n++){
+  for( n=0; n <w*h; n++){
   for( ; i < size; i++){
     if( i == 4*n )  // r channel, chnum = 0
     {
