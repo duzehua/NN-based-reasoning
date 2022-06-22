@@ -571,8 +571,8 @@ void getPixeldata(const char* filename, Tensor *tensor_data)
   //if there's an error, display it
   if(error != 0) std::cout << "error: " << error << std::endl;
 
-  //for mnist raw data, one png contains 28*28*4 pixels data (RGBA)
-  //image.size() = 28*28*4 = 3136, all RGBA data in one dimension
+  //for mnist raw data, one png contains w*h*4 pixels data (RGBA)
+  //image.size() = w*h*4, all RGBA data in one dimension
   int size = image.size();
   std::cout << "image size: " << size << std::endl;
 
@@ -594,7 +594,7 @@ void getPixeldata(const char* filename, Tensor *tensor_data)
   // std::cout << std::endl;
   
   //discard the Alpha channel data
-  int n = 0;  // n is pixel count to separate the rgb channels, total 28*28 RGB pxiel
+  int n = 0;  // n is pixel count to separate the rgb channels, total w*h RGB pxiel
   int i,j_r,j_g,j_b,k_r,k_g,k_b;  // i is the count of image[]; j/k is the subscript of row or col dimension; r/g/b is the channel index 
   i = j_r = j_g = j_b = k_r = k_g = k_b = 0;
 
