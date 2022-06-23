@@ -22,10 +22,24 @@ figure;
 axes('Position',[.1 .1 .8 .6]);
 while 1
         m = unidrnd(60000);
-        imshow(train_x_matrix(:,:,m),[]);
+        %imshow(train_x_matrix(:,:,m),[]);
+
+        subplot(1,2,1);
+        imshow(train_x_matrix(:,:,m));
+        
+        subplot(1,2,2);
+        % resize后有噪点，舍弃
+        %pic2 = imresize(train_x_matrix(:,:,m), [32,32]);
+        %padding
+        pic2 = padarray(train_x_matrix(:,:,m),[2,2]);
+        imshow(pic2);
+        
+        rfile_name = sprintf('test_images/padpic_%i_%i.png', train_y(m), m);
         file_name = sprintf('test_images/pic_%i_%i.png', train_y(m), m);
-        %saveas(train_x_matrix(:,:,m),file_name, 'png');
+        
         imwrite(train_x_matrix(:,:,m), file_name);
+        imwrite(pic2, rfile_name);
+
         title(num2str(train_y(m))); 
         waitforbuttonpress;   %每点击一次随机显示一张训练集图片，与其对应的标准数字
 end
