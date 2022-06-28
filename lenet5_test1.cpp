@@ -27,7 +27,7 @@
 #include "load_data.h"
 #include "decodepng.h"
 
-/**************************ÍøÂç²ãÃèÊö²¿·Ö**************************/
+/**************************ç½‘ç»œå±‚æè¿°éƒ¨åˆ†**************************/
 int main()
 {
     clock_t clock_start, clock_end;
@@ -38,14 +38,14 @@ int main()
     // CONVMODE SAME[5]  = "SAME";
     // CONVMODE VALID[6] = "VALID";
 
-    //// ¶¨Òå³Ø»¯²½³¤
+    //// å®šä¹‰æ± åŒ–æ­¥é•¿
     POOLSTRIDE pool_stride;
-    pool_stride.row = 2;  // ĞĞ²½³¤
-    pool_stride.col = 2;  // ÁĞ²½³¤
-    //// ¶¨Òå³Ø»¯³ß´ç
+    pool_stride.row = 2;  // è¡Œæ­¥é•¿
+    pool_stride.col = 2;  // åˆ—æ­¥é•¿
+    //// å®šä¹‰æ± åŒ–å°ºå¯¸
     POOLSIZE pool_size;
-    pool_size.row = 2;  // ³Ø»¯ºËĞĞÊı
-    pool_size.col = 2;  // ³Ø»¯ºËÁĞÊı
+    pool_size.row = 2;  // æ± åŒ–æ ¸è¡Œæ•°
+    pool_size.col = 2;  // æ± åŒ–æ ¸åˆ—æ•°
 
     const char* pngfile = "./test_images/padpic_4_8318.png";
     const char* conv_kel_1_file = "./csv/block_1.0.weight.csv";
@@ -139,15 +139,15 @@ int main()
     Tensor output_8;
     TensorInitial(&output_8, TENSOR4_STR, output_8_shape);
 
-    // ÍøÂç½á¹¹¶¨Òå
-    //// Conv-1, ¾í»ı²ã1 k=5, o=6, s=1
+    // ç½‘ç»œç»“æ„å®šä¹‰
+    //// Conv-1, å·ç§¯å±‚1 k=5, o=6, s=1
 
     CONVSTRIDE conv_stride_1;
-    conv_stride_1.row = 1;  // ĞĞ²½³¤
-    conv_stride_1.col = 1;  // ÁĞ²½³¤
+    conv_stride_1.row = 1;  // è¡Œæ­¥é•¿
+    conv_stride_1.col = 1;  // åˆ—æ­¥é•¿
 
     Conv2(&input_0, &conv_kel_1, &conv_stride_1, &bias_1, VALID, &output_1);
-    //// Pool-1, ³Ø»¯²ã1 k=2, Max, s=2
+    //// Pool-1, æ± åŒ–å±‚1 k=2, Max, s=2
     POOLSIZE pool_size_2;
     pool_size_2.row = 2;
     pool_size_2.col = 2;
@@ -156,14 +156,14 @@ int main()
     pool_stride_2.col = 2;
 
     MaxPooling2D(&output_1, &pool_size_2, &pool_stride_2, VALID, &output_2);
-    //// Conv-2, ¾í»ı²ã2 k=5, o=6, s=1
+    //// Conv-2, å·ç§¯å±‚2 k=5, o=6, s=1
 
     CONVSTRIDE conv_stride_3;
-    conv_stride_3.row = 1;  // ĞĞ²½³¤
-    conv_stride_3.col = 1;  // ÁĞ²½³¤
+    conv_stride_3.row = 1;  // è¡Œæ­¥é•¿
+    conv_stride_3.col = 1;  // åˆ—æ­¥é•¿
 
     Conv2(&output_2, &conv_kel_3, &conv_stride_3, &bias_3, VALID, &output_3);
-    //// Pool-2, ³Ø»¯²ã2, k=2, Max, s=2
+    //// Pool-2, æ± åŒ–å±‚2, k=2, Max, s=2
     POOLSIZE pool_size_4;
     pool_size_4.row = 2;
     pool_size_4.col = 2;
@@ -195,15 +195,15 @@ int main()
 
     for (int i = 0; i < 1; i++)
     {
-        //printf("¸öÊı %d ============================================\n", i);
+        //printf("ä¸ªæ•° %d ============================================\n", i);
         for (int j = 0; j < 1; j++)
         {
-            //printf("Í¨µÀ %d ------------------------------------------\n", j);
+            //printf("é€šé“ %d ------------------------------------------\n", j);
             for (int k = 0; k < 1; k++)
             {
                 for (int h = 0; h < 10; h++)
                 {
-                    printf("Êı×Ö%dµÄ¸ÅÂÊ:%f \n", h, output_8.data[i][j][k][h]);
+                    printf("æ•°å­—%dçš„æ¦‚ç‡:%f \n", h, output_8.data[i][j][k][h]);
                 }
                 printf("\n");
             }
@@ -211,5 +211,30 @@ int main()
         }
         // printf("\n\n\n");
     }
+    
+    TensorFree(&input_0);
+    TensorFree(&output_1);
+    TensorFree(&output_2);
+    TensorFree(&output_3);
+    TensorFree(&output_4);
+    TensorFree(&output_5);
+    TensorFree(&output_6);
+    TensorFree(&output_7);
+    TensorFree(&output_8);
+    TensorFree(&conv_kel_1);
+    TensorFree(&conv_kel_3);
+    MatrixFree(&weight_6);
+    MatrixFree(&weight_7);
+    MatrixFree(&weight_8);
+    MatrixFree(&bias_6);
+    MatrixFree(&bias_7);
+    MatrixFree(&bias_8);
+    ArrayFree(&bias_1);
+    ArrayFree(&bias_3);
 
+
+
+    clock_end = clock();
+    // printf("time = %f\n",(double)(clock_end - clock_start));
+    printf("time = %f s\n", (double)(clock_end - clock_start) / CLK_TCK);
 }
