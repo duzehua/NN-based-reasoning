@@ -7,24 +7,24 @@
 #include "GINFO_VAR.h"
 
 /**
- * @brief ä»csvæ–‡ä»¶åŠ è½½æƒé‡æ•°æ®åˆ°Tensor
- * 
- * @param filename 
- * @param tensor_data 
- * @param ts_shape 
- * @param ts_type 
+ * @brief ´ÓcsvÎÄ¼ş¼ÓÔØÈ¨ÖØÊı¾İµ½Tensor
+ *
+ * @param filename
+ * @param tensor_data
+ * @param ts_shape
+ * @param ts_type
  */
-void loadweight_csv2tensor(const char *filename, Tensor *tensor_data, int *ts_shape, char *ts_type)
+void loadweight_csv2tensor(const char* filename, Tensor* tensor_data, int* ts_shape, char* ts_type)
 {
-    FILE *fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "r");
     if (fp == NULL) {
         fprintf(stderr, "fopen() failed.\n");
         exit(EXIT_FAILURE);
     }
-    char col_max[102400];    //csvæ–‡ä»¶æ•°æ®æœ€å¤§åˆ—æ•°ï¼Œå°½å¯èƒ½å¤§ï¼ˆä¸€ä¸ªæƒé‡å 22ä¸ªå­—ç¬¦å·¦å³ï¼Œä¸€ä¸ªå¼ é‡çš„æ‰€æœ‰æƒé‡æ”¾åœ¨ä¸€è¡Œï¼‰
-    char *token;
+    char col_max[102400];    //csvÎÄ¼şÊı¾İ×î´óÁĞÊı£¬¾¡¿ÉÄÜ´ó£¨Ò»¸öÈ¨ÖØÕ¼22¸ö×Ö·û×óÓÒ£¬Ò»¸öÕÅÁ¿µÄËùÓĞÈ¨ÖØ·ÅÔÚÒ»ĞĞ£©
+    char* token;
 
-    int tsnum,chnum,row,col;
+    int tsnum, chnum, row, col;
     if (strcmp(ts_type, TENSOR2_STR) == 0)
     {
         tsnum = 1;    //tsnum
@@ -52,24 +52,24 @@ void loadweight_csv2tensor(const char *filename, Tensor *tensor_data, int *ts_sh
         exit(EXIT_FAILURE);
     }
 
-    //å°†csVä¸­æƒé‡æ•°æ®åŠ è½½åˆ°tensor
-    int i,j,k,l;
+    //½«csVÖĞÈ¨ÖØÊı¾İ¼ÓÔØµ½tensor
+    int i, j, k, l;
     i = j = k = l = 0;
-    while (fgets(col_max, 102400, fp) != NULL && i < tsnum) 
+    while (fgets(col_max, 102400, fp) != NULL && i < tsnum)
     {
-        token = strtok(col_max,",");
+        token = strtok(col_max, ",");
         j = 0;
-        while (token != NULL && j < chnum) 
+        while (token != NULL && j < chnum)
         {
             k = 0;
-            while(token != NULL && k < row)  
+            while (token != NULL && k < row)
             {
                 l = 0;
-                while(token != NULL && l < col)
+                while (token != NULL && l < col)
                 {
-                    printf("Token: %s\n", token);
+                    //printf("Token: %s\n", token);
                     tensor_data->data[i][j][k][l] = strtod(token, NULL);
-                    printf("%d %d %d %d: %.19f\n", i, j, k, l, tensor_data->data[i][j][k][l]);
+                    //printf("%d %d %d %d: %.19f\n", i, j, k, l, tensor_data->data[i][j][k][l]);
                     l++;
                     token = strtok(NULL, ",");
                 }
@@ -85,14 +85,50 @@ void loadweight_csv2tensor(const char *filename, Tensor *tensor_data, int *ts_sh
 }
 
 /**
- * @brief ä»csvæ–‡ä»¶åŠ è½½å…¨è¿æ¥å±‚çš„æƒé‡åˆ°Matrix
- * 
- * @param filename 
- * @param matrix 
+ * @brief ´ÓcsvÎÄ¼ş¼ÓÔØÈ«Á¬½Ó²ãµÄÈ¨ÖØµ½Matrix
+ *
+ * @param filename
+ * @param matrix
  */
-void loadFCweight_csv2Matrix(const char *filename, Matrix *mat_data)
+void loadFCweight_csv2Matrix(const char* filename, Matrix* mat_data)
 {
-    FILE *fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "r");
+    if (fp == NULL) {
+        fprintf(stderr, "fopen() failed.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    //int row = mat_data->row;
+    //int col = mat_data->col;
+    int row = mat_data->col;  // transpose
+    int col = mat_data->row;  //transpose
+    char col_max[102400];
+    char* token;
+    int i, j;
+    i = j = 0;
+    while (fgets(col_max, 102400, fp) != NULL) {
+        token = strtok(col_max, ",");
+        while (token != NULL && i < row)
+        {
+            j = 0;
+            while (token != NULL && j < col) {
+                //printf("Token: %s\n", token);
+                //mat_data->data[i][j] = strtod(token, NULL);
+                mat_data->data[j][i] = strtod(token, NULL);  // ¾ØÕó³Ë·¨£¬ÏÈ¶ÔÈ«Á¬½ÓµÄÈ¨ÖØºÍÆ«ÖÃ½øĞĞ×ªÖÃ£¨reshape£©
+                //printf("%d %d : %.19f\n", i, j, mat_data->data[i][j]);
+                j++;
+                token = strtok(NULL, ",");
+            }
+            i++;
+        }
+
+    }
+}
+
+
+void loadFCbias_csv2Matrix(const char* filename, Matrix* mat_data)
+{
+    FILE* fp = fopen(filename, "r");
     if (fp == NULL) {
         fprintf(stderr, "fopen() failed.\n");
         exit(EXIT_FAILURE);
@@ -100,19 +136,19 @@ void loadFCweight_csv2Matrix(const char *filename, Matrix *mat_data)
 
     int row = mat_data->row;
     int col = mat_data->col;
-    char col_max[102400];
-    char *token;
+    char col_max[10240];
+    char* token;
     int i, j;
     i = j = 0;
-	while (fgets(col_max, 102400, fp) != NULL) {
-        token = strtok(col_max,",");
-        while(token != NULL && i < row)  
+    while (fgets(col_max, 10240, fp) != NULL) {
+        token = strtok(col_max, ",");
+        while (token != NULL && i < row)
         {
             j = 0;
             while (token != NULL && j < col) {
-                printf("Token: %s\n", token);
+                //printf("Token: %s\n", token);
                 mat_data->data[i][j] = strtod(token, NULL);
-                printf("%d %d : %.19f\n", i, j, mat_data->data[i][j]);
+                //printf("%d %d : %.19f\n", i, j, mat_data->data[i][j]);
                 j++;
                 token = strtok(NULL, ",");
             }
@@ -123,31 +159,31 @@ void loadFCweight_csv2Matrix(const char *filename, Matrix *mat_data)
 }
 
 /**
- * @brief ä»csvæ–‡ä»¶åŠ è½½åç½®æ•°æ®åˆ°Array
- * 
- * @param filename 
- * @param arr_data 
- * @param len 
+ * @brief ´ÓcsvÎÄ¼ş¼ÓÔØÆ«ÖÃÊı¾İµ½Array
+ *
+ * @param filename
+ * @param arr_data
+ * @param len
  */
-void loadbias_csv2array(const char *filename, Array *arr_data, int len)
+void loadbias_csv2array(const char* filename, Array* arr_data, int len)
 {
-    FILE *fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "r");
     if (fp == NULL) {
         fprintf(stderr, "fopen() failed.\n");
         exit(EXIT_FAILURE);
     }
-    char col_max[100]; //åç½®æ•°æ®æ¯ä¸ªå¼ é‡åªæœ‰ä¸€ä¸ªï¼Œä¸€ä¸ªåªå ä¸€è¡Œ
-    char *token;
+    char col_max[1000]; //Æ«ÖÃÊı¾İÃ¿¸öÕÅÁ¿Ö»ÓĞÒ»¸ö£¬Ò»¸öÖ»Õ¼Ò»ĞĞ
+    char* token;
 
     int i = 0;
-    while(fgets(col_max, 100, fp) != NULL)
+    while (fgets(col_max, 100, fp) != NULL)
     {
-        token = strtok(col_max,",");
-        while(token != NULL && i < len)
+        token = strtok(col_max, ",");
+        while (token != NULL && i < len)
         {
-            printf("Token: %s\n", token);
+            //printf("Token: %s\n", token);
             arr_data->data[i] = strtod(token, NULL);
-            printf("%d : %.19f\n", i, arr_data->data[i]);
+            //printf("%d : %.19f\n", i, arr_data->data[i]);
             token = strtok(NULL, ",");
         }
         i++;
