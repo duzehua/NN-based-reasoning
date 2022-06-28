@@ -1,4 +1,4 @@
-This project created by Visual studio 2022
+这个测试项目使用的是Visual studio 2022
 
 # How to use
 
