@@ -37,7 +37,7 @@
 * Built-By: Zehua Du
 * Date: Mar. 23, 2022  
 */
-void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array *conv_bias, char *conv_mode, Tensor *conv_result)
+void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Tensor *conv_bias, char *conv_mode, Tensor *conv_result)
 {
     // 对每个张量, 对每个通道单独卷积, 但应先定义结果张量和结果矩阵, 对每个通道赋值给矩阵, 然后矩阵卷积之后赋值给张量
     int i, j, k, h;
@@ -53,10 +53,10 @@ void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array 
         exit(EXIT_FAILURE);
     }
 
-    // 限定卷积核通道与偏置长度一致
-    if ((conv_kel->chnum) != (conv_bias->len))
+    // 限定卷积核个数与偏置长度一致
+    if ((conv_kel->tsnum) != (conv_bias->col))
     {
-        fprintf(stderr, "ERROR: Conv2: conv_kel->chnum len[%d] != conv_bias->len len[%d])\n", conv_kel->chnum, conv_bias->len);
+        fprintf(stderr, "ERROR: Conv2: conv_kel->tsnum len[%d] != conv_bias->col len[%d])\n", conv_kel->tsnum, conv_bias->col);
         exit(EXIT_FAILURE);
     }
 
@@ -136,7 +136,7 @@ void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array 
     // 卷积结果张量
     // 参考: https://oldtang.com/6775.html
     TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
-    TENSOR4_SHAPE[1] = conv_kel->chnum;   // 输出张量的通道与卷积核通道数一致
+    TENSOR4_SHAPE[1] = conv_kel->tsnum;   // 输出张量的通道与卷积核个数一致
     TENSOR4_SHAPE[2] = floor(((conved_Tsr->row) + (ext_half_len<<1) - ck_row) / conv_stride->row) + 1;  // 输出张量的行数为 conved_Tsr->row + 延拓半宽*2
     TENSOR4_SHAPE[3] = floor(((conved_Tsr->col) + (ext_half_len<<1) - ck_row) / conv_stride->col) + 1;  // 输出张量的列数为 conved_Tsr->col + 延拓半宽*2
     // printf("结果卷积\n");
@@ -151,7 +151,7 @@ void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array 
     /*
                                 个   通道   行    列
     被卷积张量索引 conved_Tsr    [cd_i][cd_j][cd_k][cd_h]
-    卷积核索引     conv_kel      [0   ][ck_j][ck_k][ck_h]
+    卷积核索引     conv_kel      [ck_i][ck_j][ck_k][ck_h]
     卷积结果索引   conv_result   [rs_i][rs_j][rs_k][rs_h]
     拓展卷积索引   extend_tensor [et_i][et_j][et_k][et_h]
     */    
@@ -164,7 +164,7 @@ void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array 
     for (cd_i = 0; cd_i < conved_Tsr->tsnum; cd_i++)   // 遍历"被卷积"个数 => 对应实际输出的个数
     {
         // printf("level - 1\n");
-        for (ck_j = 0; ck_j < conv_kel->chnum; ck_j++) // 遍历"卷积核"通道 => 对应实际输出通道数
+        for (ck_i = 0; ck_i < conv_kel->tsnum; ck_i++) // 遍历"卷积核"通道 => 对应实际输出通道数
         {
             // printf("level - 2\n");
             // 每通道\行\列,对应的核大小内容进行卷积, 然后循环外 + bias
@@ -178,7 +178,7 @@ void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array 
                     {
                         // printf("level - 5\n");
                         // 当前点为核中心, 对应的核大小张量数据, 卷积
-                        // += extend_tensor.data[cd_i][cd_j][核范围][核范围] .* conv_kel->data[0][ck_j][核范围][核范围]
+                        // += extend_tensor.data[cd_i][cd_j][核范围][核范围] .* conv_kel->data[0][ck_i][核范围][核范围]
                         for (ck_k = 0; ck_k < conv_kel->row; ck_k++)     // 遍历"卷积核"行
                         {
                             // #pragma omp parallel 
@@ -186,16 +186,16 @@ void Conv2(Tensor *conved_Tsr, Tensor *conv_kel, CONVSTRIDE *conv_stride, Array 
                             for (ck_h = 0; ck_h < conv_kel->col; ck_h++) // 遍历"卷积核"列
                             {
                                 // printf("level - 7\n");
-                                // printf("[%d][%d][%d][%d]\n", conved_Tsr->tsnum, conv_kel->chnum, conv_result->row, conv_result->col);
-                                // printf("[%d][%d][%d][%d]\n", cd_i, ck_j, cd_k, cd_h);
+                                // printf("[%d][%d][%d][%d]\n", conved_Tsr->tsnum, conv_kel->tsnum, conv_result->row, conv_result->col);
+                                // printf("[%d][%d][%d][%d]\n", cd_i, ck_i, cd_k, cd_h);
                                 // printf("[%d][%d][%d][%d] => %f\n", cd_i, cd_j, cd_k + ck_k, cd_h + ck_h, extend_tensor.data[cd_i][cd_j][cd_k + ck_k][cd_h + ck_h]);
-                                conv_result->data[cd_i][ck_j][cd_k][cd_h] += (extend_tensor.data[cd_i][cd_j][cd_k*(conv_stride->row) + ck_k][cd_h*(conv_stride->col) + ck_h] * conv_kel->data[0][ck_j][ck_k][ck_h]);
+                                conv_result->data[cd_i][ck_i][cd_k][cd_h] += (extend_tensor.data[cd_i][cd_j][cd_k*(conv_stride->row) + ck_k][cd_h*(conv_stride->col) + ck_h] * conv_kel->data[ck_i][0][ck_k][ck_h]);
                             }
                         }
                     }
                     // TODO 加偏置, 需确定是否对完整核卷积加一次偏置
                     // 参考: https://poloclub.github.io/cnn-explainer/
-                    conv_result->data[cd_i][ck_j][cd_k][cd_h] += conv_bias->data[ck_j]; // 1个核输出通道对应一个卷积
+                    conv_result->data[cd_i][ck_i][cd_k][cd_h] += conv_bias->data[0][0][0][ck_i]; // 1个核输出通道对应一个卷积
                 }
             }
         }

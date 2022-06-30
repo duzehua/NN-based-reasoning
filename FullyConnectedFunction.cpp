@@ -55,39 +55,40 @@ void TensorFlatten(Tensor *conved_Tsr, Tensor *flatten_Data)
 /**
 * 全连接操作
 * 说明: 对输入数据进行全连接.
-* @param[in]  m_data_in    -> MxN 全连接操作输入
-* @param[in]  weight       -> NxP   全连接操作权重
-* @param[in]  bias         -> Px1   全连接操作偏置
-* @param[in]  m_data_out   -> MxP 全连接操作输出
+* @param[in]  m_data_in    -> MxN 全连接操作输入   [输入个数-M,   输入节点数-N]
+* @param[in]  weight       -> PxN   全连接操作权重 [输出节点数-P, 输入节点数-N]
+* @param[in]  bias         -> Px1   全连接操作偏置 [输出节点数-P]
+* @param[in]  m_data_out   -> MxP 全连接操作输出   [输出个数-M,   输出节点数-P]
 * @param[out] Null
 * @retval Null
 * @par Null
 * Built-By: Zehua Du
 * Date: Apr. 21, 2022  
 */
-void FullConnected(Tensor *m_data_in, Matrix *weight, Matrix *bias, Tensor *m_data_out)
+void FullConnected(Tensor *m_data_in, Tensor *weight, Tensor *bias, Tensor *m_data_out)
 {
-    //
+    
     // 1*N x N*P => 1*P
-    // weight N行，P列
-    int data_o_num = (m_data_in->row);  
-    int data_i_dim = (m_data_in->col);
+    // weight P行，N列
+    // 输出128，输入5408
+    int data_o_num = (m_data_in->row);  // 输入(出)个张量个数 M x N -> M
+    int data_i_dim = (m_data_in->col);  // 平铺展开的单个张量 M x N -> N
 
-    int data_w_dim = (weight->row);
-    int data_o_dim = (weight->col);
+    int data_o_dim = (weight->row);     // 权重的输出维度 P x N -> P
+    int data_w_dim = (weight->col);     // 权重的输入维度 P x N -> N
 
-    int data_b_dim = (bias->row);
-    int data_b_len = (bias->col);
+    //int data_b_dim = (bias->row);
+    int data_b_len = (bias->col);       // 偏置的维度，等于输出维度, P
 
-    if (data_i_dim != data_w_dim)
+    if (data_i_dim != data_w_dim)  // N
     {
-        fprintf(stderr, "ERROR: FullConnected => (m_data_in->col[%d] != weight->row[%d])\n", data_i_dim, data_w_dim);
+        fprintf(stderr, "ERROR: FullConnected => (m_data_in->col[%d] != weight->col[%d])\n", data_i_dim, data_w_dim);
         exit(EXIT_FAILURE);
     }
 
-    if (data_o_dim != data_b_dim)
+    if (data_o_dim != data_b_len)
     {
-        fprintf(stderr, "ERROR: FullConnected => (weight->col[%d] != bias->row[%d])\n", data_o_dim, data_b_dim);
+        fprintf(stderr, "ERROR: FullConnected => (weight->row[%d] != bias->col[%d])\n", data_w_dim, data_b_len);
         exit(EXIT_FAILURE);
     }
 
@@ -100,14 +101,16 @@ void FullConnected(Tensor *m_data_in, Matrix *weight, Matrix *bias, Tensor *m_da
 
     // 遍历每个样本
     //[idx_num][idx_P]
-    for (idx_M = 0; idx_M < (m_data_in->row); idx_M++)
+    // M * ((1 x N) x (N x P) + P) => M * (1 x P)
+    // data_o_num * ((1 x data_i_dim) x (data_i_dim x data_o_dim) + data_o_dim)
+    for (idx_M = 0; idx_M < data_o_num; idx_M++)  // Num
     {
-        for (idx_P = 0; idx_P < data_o_dim; idx_P++)
+        for (idx_P = 0; idx_P < data_o_dim; idx_P++)  // N
         {
-            m_data_out->data[0][0][idx_M][idx_P] = bias->data[idx_P][0];
-            for (idx_N = 0; idx_N < data_i_dim; idx_N++)
+            m_data_out->data[0][0][idx_M][idx_P] = bias->data[0][0][0][idx_P]; 
+            for (idx_N = 0; idx_N < data_i_dim; idx_N++)  // M
             {
-                m_data_out->data[0][0][idx_M][idx_P] = m_data_out->data[0][0][idx_M][idx_P] + (m_data_in->data[0][0][idx_M][idx_N])*(weight->data[idx_N][idx_P]);
+                m_data_out->data[0][0][idx_M][idx_P] = m_data_out->data[0][0][idx_M][idx_P] + (m_data_in->data[0][0][idx_M][idx_N])*(weight->data[0][0][idx_P][idx_N]);
             }
         }
     }

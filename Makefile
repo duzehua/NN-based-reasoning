@@ -1,12 +1,18 @@
-main:Tensor.o ConvOperation.o ActivationFunction.o PoolingOperation.o FullyConnectedFunction.o GINFO_VAR.o main.o 
+main:Tensor.o GeneralDataType.o DataDefinition.o ConvOperation.o ActivationFunction.o PoolingOperation.o FullyConnectedFunction.o LayerParamLoad.o StringOperation.o GINFO_VAR.o main.o
 # g++ -fopenmp Tensor.o ConvOperation.o ActivationFunction.o GINFO_VAR.o main.o -o main
-	gcc Tensor.o ConvOperation.o ActivationFunction.o PoolingOperation.o FullyConnectedFunction.o GINFO_VAR.o main.o -o main
+	gcc Tensor.o GeneralDataType.o DataDefinition.o ConvOperation.o ActivationFunction.o PoolingOperation.o FullyConnectedFunction.o LayerParamLoad.o StringOperation.o GINFO_VAR.o main.o -o main
 
 # 功能函数----------------------
 
 Tensor.o:Tensor.cpp
 # g++ -fopenmp -c Tensor.cpp
 	gcc -c Tensor.cpp
+
+GeneralDataType.o: GeneralDataType.cpp
+	gcc -c GeneralDataType.cpp
+
+DataDefinition.o:  DataDefinition.cpp
+	gcc -c DataDefinition.cpp
 
 ConvOperation.o:ConvOperation.cpp
 # g++ -fopenmp -c ConvOperation.cpp
@@ -22,6 +28,12 @@ PoolingOperation.o:PoolingOperation.cpp
 
 FullyConnectedFunction.o:FullyConnectedFunction.cpp
 	gcc -c FullyConnectedFunction.cpp
+
+LayerParamLoad.o:LayerParamLoad.cpp
+	gcc -c LayerParamLoad.cpp
+
+StringOperation.o: StringOperation.cpp
+	gcc -c StringOperation.cpp
 
 # 全局参数----------------------
 

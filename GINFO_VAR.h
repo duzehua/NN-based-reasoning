@@ -4,10 +4,12 @@
 #include "GINFO.h"
 
     // 张量参数
+    extern TENSORTYPE  TENSOR1_STR[6];
     extern TENSORTYPE  TENSOR2_STR[7];
     extern TENSORTYPE  TENSOR3_STR[9];
     extern TENSORTYPE  TENSOR4_STR[9];
 
+    extern TENSORSHAPE TENSOR1_SHAPE[1];
     extern TENSORSHAPE TENSOR2_SHAPE[2];
     extern TENSORSHAPE TENSOR3_SHAPE[3];
     extern TENSORSHAPE TENSOR4_SHAPE[4];
