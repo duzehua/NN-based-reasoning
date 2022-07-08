@@ -28,8 +28,8 @@
 #include "GeneralDataType.h"
 #include "StringOperation.h"
 #include "LayerParamLoad.h"
-#include "GetFileNames.h"
-#include "load_data.h"
+//#include "GetFileNames.h"
+//#include "load_data.h"
 #include "decodepng.h"
 
 /**************************网络层描述部分**************************/
@@ -55,23 +55,24 @@ int main()
 	//const char* pngfile = "./test_images/padpic_9_13429.png";    //预测错误例子1
 	//const char* pngfile = "./test_images/padpic_7_39306.png";  //预测错误例子2
 
-	string filenames[10];
-	getfileNamesfromPath(parm_pre_path, filenames);
-	//for (int i = 0; i < 10; i++)
-	//{
-	//	std::cout << "filenames: " << filenames[i] << "\n";
-	//}
-	// 注意filenames的下标（与文件命名以及读取顺序相关）
-	const char* cp_conv_kel_1 = filenames[0].c_str();
-	const char* cp_conv_bias_1 = filenames[1].c_str();
-	const char* cp_conv_kel_3 = filenames[2].c_str();
-	const char* cp_conv_bias_3 = filenames[3].c_str();
-	const char* cp_fcweight_6 = filenames[4].c_str();
-	const char* cp_f_fcbias_6 = filenames[5].c_str();
-	const char* cp_fcweight_7 = filenames[6].c_str();
-	const char* cp_f_fcbias_7 = filenames[7].c_str();
-	const char* cp_fcweight_8 = filenames[8].c_str();
-	const char* cp_f_fcbias_8 = filenames[9].c_str();
+	// 使用string类型获取文件路径的方法
+	//string filenames[10];
+	//getfileNamesfromPath(parm_pre_path, filenames);
+	////for (int i = 0; i < 10; i++)
+	////{
+	////	std::cout << "filenames: " << filenames[i] << "\n";
+	////}
+	//// 注意filenames的下标（与文件命名以及读取顺序相关）
+	//const char* cp_conv_kel_1 = filenames[0].c_str();
+	//const char* cp_conv_bias_1 = filenames[1].c_str();
+	//const char* cp_conv_kel_3 = filenames[2].c_str();
+	//const char* cp_conv_bias_3 = filenames[3].c_str();
+	//const char* cp_fcweight_6 = filenames[4].c_str();
+	//const char* cp_f_fcbias_6 = filenames[5].c_str();
+	//const char* cp_fcweight_7 = filenames[6].c_str();
+	//const char* cp_f_fcbias_7 = filenames[7].c_str();
+	//const char* cp_fcweight_8 = filenames[8].c_str();
+	//const char* cp_f_fcbias_8 = filenames[9].c_str();
 
 	//printf("cp_conv_kel_1: %s \n ", cp_conv_kel_1);
 	//printf("cp_conv_kel_3: %s \n", cp_conv_kel_3);
@@ -79,29 +80,29 @@ int main()
 	//printf("cp_conv_bias_3: %s \n", cp_conv_bias_3);
 	//printf("cp_f_fcbias_8: %s \n", cp_f_fcbias_8);
 
+	// 直接定义文件名称的方法（兼容性好）
+	char f_conv_kel_1[] = "14_117_0_6_1_5_5_block_1.0.weight.csv";
+	char f_conv_kel_3[] = "14_117_2_16_6_5_5_block_1.3.weight.csv";
+	char f_conv_bias_1[] = "14_117_1_0_0_0_6_block_1.0.bias.csv";
+	char f_conv_bias_3[] = "14_117_3_0_0_0_16_block_1.3.bias.csv";
+	char f_fcweight_6[] = "14_117_4_0_0_120_400_block_2.0.weight.csv";
+	char f_fcweight_7[] = "14_117_6_0_0_84_120_block_2.2.weight.csv";
+	char f_fcweight_8[] = "14_117_8_0_0_10_84_block_2.4.weight.csv";
+	char f_fcbias_6[] = "14_117_5_0_0_0_120_block_2.0.bias.csv";
+	char f_fcbias_7[] = "14_117_7_0_0_0_84_block_2.2.bias.csv";
+	char f_fcbias_8[] = "14_117_9_0_0_0_10_block_2.4.bias.csv";
 
-	//char f_conv_kel_1[] = "14_117_1_6_1_5_5_block_1.0.weight.csv";
-	//char f_conv_kel_3[] = "14_117_3_16_6_5_5_block_1.3.weight.csv";
-	//char f_conv_bias_1[] = "14_117_2_0_0_0_6_block_1.0.bias.csv";
-	//char f_conv_bias_3[] = "14_117_4_0_0_0_16_block_1.3.bias.csv";
-	//char f_fcweight_6[] = "14_117_5_0_0_120_400_block_2.0.weight.csv";
-	//char f_fcweight_7[] = "14_117_7_0_0_84_120_block_2.2.weight.csv";
-	//char f_fcweight_8[] = "14_117_9_0_0_10_84_block_2.4.weight.csv";
-	//char f_fcbias_6[] = "14_117_6_0_0_0_120_block_2.0.bias.csv";
-	//char f_fcbias_7[] = "14_117_8_0_0_0_84_block_2.2.bias.csv";
-	//char f_fcbias_8[] = "14_117_10_0_0_0_10_block_2.4.bias.csv";
-
-	//combine path
-	//char* cp_conv_kel_1 = OSPathJoin(parm_pre_path, f_conv_kel_1);
-	//char* cp_conv_kel_3 = OSPathJoin(parm_pre_path, f_conv_kel_3);
-	//char* cp_conv_bias_1 = OSPathJoin(parm_pre_path, f_conv_bias_1);
-	//char* cp_conv_bias_3 = OSPathJoin(parm_pre_path, f_conv_bias_3);
-	//char* cp_fcweight_6 = OSPathJoin(parm_pre_path, f_fcweight_6);
-	//char* cp_fcweight_7 = OSPathJoin(parm_pre_path, f_fcweight_7);
-	//char* cp_fcweight_8 = OSPathJoin(parm_pre_path, f_fcweight_8);
-	//char* cp_f_fcbias_6 = OSPathJoin(parm_pre_path, f_fcbias_6);
-	//char* cp_f_fcbias_7 = OSPathJoin(parm_pre_path, f_fcbias_7);
-	//char* cp_f_fcbias_8 = OSPathJoin(parm_pre_path, f_fcbias_8);
+	// combine path
+	char* cp_conv_kel_1 = OSPathJoin(parm_pre_path, f_conv_kel_1);
+	char* cp_conv_kel_3 = OSPathJoin(parm_pre_path, f_conv_kel_3);
+	char* cp_conv_bias_1 = OSPathJoin(parm_pre_path, f_conv_bias_1);
+	char* cp_conv_bias_3 = OSPathJoin(parm_pre_path, f_conv_bias_3);
+	char* cp_fcweight_6 = OSPathJoin(parm_pre_path, f_fcweight_6);
+	char* cp_fcweight_7 = OSPathJoin(parm_pre_path, f_fcweight_7);
+	char* cp_fcweight_8 = OSPathJoin(parm_pre_path, f_fcweight_8);
+	char* cp_f_fcbias_6 = OSPathJoin(parm_pre_path, f_fcbias_6);
+	char* cp_f_fcbias_7 = OSPathJoin(parm_pre_path, f_fcbias_7);
+	char* cp_f_fcbias_8 = OSPathJoin(parm_pre_path, f_fcbias_8);
 
 	TENSORSHAPE input_0_shape[4] = { 1,1,32,32 };
 	//TENSORSHAPE conv_kel_1_shape[4] = { 6,1,5,5 };
