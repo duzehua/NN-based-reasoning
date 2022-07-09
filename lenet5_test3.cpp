@@ -55,8 +55,8 @@ int main()
 	//const char* pngfile = "./test_images/padpic_6_23534.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_3_57585.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_4_54348.png";    //预测正确例子
-	//const char* pngfile = "./test_images/padpic_2_7140.png";    //预测正确例子
-	const char* pngfile = "./test_images/padpic_2_11796.png";    //预测正确例子
+	const char* pngfile = "./test_images/padpic_2_7140.png";    //预测正确例子
+	//const char* pngfile = "./test_images/padpic_2_11796.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_0_15066.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_9_13429.png";    //预测错误例子1
 	//const char* pngfile = "./test_images/padpic_7_39306.png";  //预测错误例子2
@@ -72,20 +72,20 @@ int main()
 	string* bias_filenames_sr = new string[bias_filesNum];
 	string* weight_filenames_sr = new string[weight_filesNum];
 	string* layer_filenames_sr = new string[layer_filesNum];
-	// 获得对应文件夹下的所有文件的全路径
+	//// 获得对应文件夹下的所有文件的全路径
 	getfileNamesfromPath(biasparm_pre_path, bias_filenames_sr);
 	getfileNamesfromPath(weightparm_pre_path, weight_filenames_sr);
 	getfileNamesfromPath(layeroutput_pre_path, layer_filenames_sr);
 
-	//将string转为const char* 传给参数加载函数，cr表示char
+	////将string转为const char* 传给参数加载函数，cr表示char
 	const char** bias_filepath_cr = new const char* [bias_filesNum];
 	const char** weight_filepath_cr = new const char* [weight_filesNum];
 	const char** layer_filepath_cr = new const char* [layer_filesNum];
 
 	Tensor* bias_ts = new Tensor[bias_filesNum];
 	Tensor* weight_ts = new Tensor[weight_filesNum];
+	Tensor* layeroutput_ts = new Tensor[layer_filesNum];
 	Tensor* transpose_weight_ts = new Tensor[3];
-	//Tensor* output_ts = new Tensor[layer_filesNum];
 
 	for (int i = 0; i < bias_filesNum; i++)
 	{
@@ -102,50 +102,28 @@ int main()
 	{
 		layer_filepath_cr[k] = layer_filenames_sr[k].c_str();
 	}
+	//// 申请一个shape二维数组来放各层输出的shape，-1是因为实际只需要8个tensor而layoutput_data下有9个文件
+	int** layerout_ts_shape = new int* [layer_filesNum - 1];
+	for (int i = 0; i < layer_filesNum - 1; i++)
+		layerout_ts_shape[i] = new int[4];
+
+	for (int i = 0; i < layer_filesNum - 1; i++)
+	{
+		ExtractShapeFromCharForTensor(layer_filepath_cr[i], layerout_ts_shape[i]);
+		//for (int j = 0; j < 4; j++)
+		//{
+		//	printf("layout_ts_shape[%d]:%d ", i, layerout_ts_shape[i][j]);
+		//}
+		//printf("\n");
+		TensorInitial(&layeroutput_ts[i], TENSOR4_STR, layerout_ts_shape[i]);
+	}
 
 	TENSORSHAPE input_0_shape[4] = { 1,1,32,32 };
-	TENSORSHAPE output_1_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[0], output_1_shape);
-	TENSORSHAPE output_2_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[2], output_2_shape);
-	TENSORSHAPE output_3_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[3], output_3_shape);
-	TENSORSHAPE output_4_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[5], output_4_shape);
-
-	TENSORSHAPE output_5_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[6], output_5_shape);
-	TENSORSHAPE output_6_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[7], output_6_shape);
-	TENSORSHAPE output_7_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[9], output_7_shape);
-	TENSORSHAPE output_8_shape[4] = { 0,0,0,0 };
-	ExtractShapeFromCharForTensor(layer_filepath_cr[12], output_8_shape);
-
-
 	Tensor input_0;
-	Tensor output_1;
-	Tensor output_2;
-	Tensor output_3;
-	Tensor output_4;
-	Tensor output_5;
-	Tensor output_6;
-	Tensor output_7;
-	Tensor output_8;
-
 
 	TensorInitial(&input_0, TENSOR4_STR, input_0_shape);
 	getPixeldata(pngfile, &input_0);
 	MinMaxNormalization(&input_0, 0, 255, 0, 1);
-
-	TensorInitial(&output_1, TENSOR4_STR, output_1_shape);
-	TensorInitial(&output_2, TENSOR4_STR, output_2_shape);
-	TensorInitial(&output_3, TENSOR4_STR, output_3_shape);
-	TensorInitial(&output_4, TENSOR4_STR, output_4_shape);
-	TensorInitial(&output_5, TENSOR4_STR, output_5_shape);
-	TensorInitial(&output_6, TENSOR4_STR, output_6_shape);
-	TensorInitial(&output_7, TENSOR4_STR, output_7_shape);
-	TensorInitial(&output_8, TENSOR4_STR, output_8_shape);
 
 	TensorTranspose2D(&weight_ts[2], &transpose_weight_ts[0]);  //权重矩阵要转置
 
@@ -161,7 +139,7 @@ int main()
 	conv_stride_1.row = 1;  // 行步长
 	conv_stride_1.col = 1;  // 列步长
 
-	Conv2(&input_0, &weight_ts[0], &conv_stride_1, &bias_ts[0], VALID, &output_1);
+	Conv2(&input_0, &weight_ts[0], &conv_stride_1, &bias_ts[0], VALID, &layeroutput_ts[0]);
 	//// Pool-1, 池化层1 k=2, Max, s=2
 	POOLSIZE pool_size_2;
 	pool_size_2.row = 2;
@@ -169,16 +147,16 @@ int main()
 	POOLSTRIDE pool_stride_2;
 	pool_stride_2.row = 2;
 	pool_stride_2.col = 2;
-	RELU(&output_1);
+	RELU(&layeroutput_ts[0]);
 
-	MaxPooling2D(&output_1, &pool_size_2, &pool_stride_2, VALID, &output_2);
+	MaxPooling2D(&layeroutput_ts[0], &pool_size_2, &pool_stride_2, VALID, &layeroutput_ts[1]);
 	//// Conv-2, 卷积层2 k=5, o=6, s=1
 
 	CONVSTRIDE conv_stride_3;
 	conv_stride_3.row = 1;  // 行步长
 	conv_stride_3.col = 1;  // 列步长
 
-	Conv2(&output_2, &weight_ts[1], &conv_stride_3, &bias_ts[1], VALID, &output_3);
+	Conv2(&layeroutput_ts[1], &weight_ts[1], &conv_stride_3, &bias_ts[1], VALID, &layeroutput_ts[2]);
 	//// Pool-2, 池化层2, k=2, Max, s=2
 	POOLSIZE pool_size_4;
 	pool_size_4.row = 2;
@@ -186,29 +164,27 @@ int main()
 	POOLSTRIDE pool_stride_4;
 	pool_stride_4.row = 2;
 	pool_stride_4.col = 2;
-	RELU(&output_3);
+	RELU(&layeroutput_ts[2]);
 
-	MaxPooling2D(&output_3, &pool_size_4, &pool_stride_4, VALID, &output_4);
+	MaxPooling2D(&layeroutput_ts[2], &pool_size_4, &pool_stride_4, VALID, &layeroutput_ts[3]);
 	//// Flatten
 
-	TensorFlatten(&output_4, &output_5);
+	TensorFlatten(&layeroutput_ts[3], &layeroutput_ts[4]);
 	//// Full-1, o=400
 
-	FullConnected(&output_5, &transpose_weight_ts[0], &bias_ts[2], &output_6);
-	//// Activation, tanh
-	//TANH(&output_6);
-	RELU(&output_6);
+	FullConnected(&layeroutput_ts[4], &transpose_weight_ts[0], &bias_ts[2], &layeroutput_ts[5]);
+	//// Activation, Relu
+	RELU(&layeroutput_ts[5]);
 	//// Full-2, o=120
 
-	FullConnected(&output_6, &transpose_weight_ts[1], &bias_ts[3], &output_7);
-	//// Activation, tanh
-	//TANH(&output_7);
-	RELU(&output_7);
+	FullConnected(&layeroutput_ts[5], &transpose_weight_ts[1], &bias_ts[3], &layeroutput_ts[6]);
+	//// Activation, Relu
+	RELU(&layeroutput_ts[6]);
 	//// Full-3, o=84
 
-	FullConnected(&output_7, &transpose_weight_ts[2], &bias_ts[4], &output_8);
+	FullConnected(&layeroutput_ts[6], &transpose_weight_ts[2], &bias_ts[4], &layeroutput_ts[7]);
 	//// Softmax
-	SOFTMAX(&output_8);
+	SOFTMAX(&layeroutput_ts[7]);
 
 	for (int i = 0; i < 1; i++)
 	{
@@ -220,7 +196,7 @@ int main()
 			{
 				for (int h = 0; h < 10; h++)
 				{
-					printf("数字%d的概率:%f \n", h, output_8.data[i][j][k][h]);
+					printf("数字%d的概率:%f \n", h, layeroutput_ts[7].data[i][j][k][h]);
 				}
 				printf("\n");
 			}
@@ -229,22 +205,25 @@ int main()
 		// printf("\n\n\n");
 	}
 
+
+
+	// 空间释放
 	delete[] bias_filenames_sr;
 	delete[] weight_filenames_sr;
 	delete[] layer_filenames_sr;
+
 	delete[] bias_filepath_cr;
 	delete[] weight_filepath_cr;
 	delete[] layer_filepath_cr;
 
-	TensorFree(&input_0);
-	TensorFree(&output_1);
-	TensorFree(&output_2);
-	TensorFree(&output_3);
-	TensorFree(&output_4);
-	TensorFree(&output_5);
-	TensorFree(&output_6);
-	TensorFree(&output_7);
-	TensorFree(&output_8);
+	for (int i = 0; i < layer_filesNum - 1; i++)
+		delete[] layerout_ts_shape[i];
+	delete[]layerout_ts_shape;
+
+	for (int i = 0; i < layer_filesNum - 1; i++)  // -1是因为实际只需要8个tensor而layoutput_data下有9个文件
+	{
+		TensorFree(&layeroutput_ts[i]);
+	}
 
 	for (int i = 0; i < bias_filesNum; i++)
 	{
@@ -260,9 +239,6 @@ int main()
 	{
 		TensorFree(&transpose_weight_ts[k]);
 	}
-
-
-
 
 
 	clock_end = clock();
