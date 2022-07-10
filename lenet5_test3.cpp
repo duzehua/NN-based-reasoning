@@ -10,6 +10,7 @@
 *version: author, date, desc\n
 */
 
+
 #define _CRT_SECURE_NO_WARNINGS
 
 // #include <error.h>
@@ -31,6 +32,7 @@
 #include "GetFileNames.h"
 //#include "load_data.h"
 #include "decodepng.h"
+#include "decodeImage_CV.h"
 
 /**************************网络层描述部分**************************/
 int main()
@@ -55,11 +57,11 @@ int main()
 	//const char* pngfile = "./test_images/padpic_6_23534.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_3_57585.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_4_54348.png";    //预测正确例子
-	const char* pngfile = "./test_images/padpic_2_7140.png";    //预测正确例子
+	//const char* pngfile = "./test_images/padpic_2_7140.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_2_11796.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_0_15066.png";    //预测正确例子
 	//const char* pngfile = "./test_images/padpic_9_13429.png";    //预测错误例子1
-	//const char* pngfile = "./test_images/padpic_7_39306.png";  //预测错误例子2
+	const char* pngfile = "./test_images/padpic_7_39306.png";  //预测错误例子2
 
 	// 使用string类型获取文件路径的方法
 	// 先获取文件数目
@@ -118,11 +120,14 @@ int main()
 		TensorInitial(&layeroutput_ts[i], TENSOR4_STR, layerout_ts_shape[i]);
 	}
 
-	TENSORSHAPE input_0_shape[4] = { 1,1,32,32 };
 	Tensor input_0;
 
-	TensorInitial(&input_0, TENSOR4_STR, input_0_shape);
-	getPixeldata(pngfile, &input_0);
+	//使用decodepng.cpp进行png解析，会有xlocale运行错误
+	//getPixeldata(pngfile, &input_0);
+
+	//使用opencv库进行图片解析
+	getPixeldata_CV(pngfile, 0, &input_0);
+
 	MinMaxNormalization(&input_0, 0, 255, 0, 1);
 
 	TensorTranspose2D(&weight_ts[2], &transpose_weight_ts[0]);  //权重矩阵要转置
