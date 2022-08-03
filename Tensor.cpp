@@ -8,15 +8,15 @@
 #include "GINFO_VAR.h"
 
 /**
-* ÕÅÁ¿³õÊ¼»¯
-* ËµÃ÷: Ã¿¶¨ÒåÒ»¸öÕÅÁ¿, ĞëÖ´ĞĞ³õÊ¼»¯²Ù×÷ÒÔ»ñÈ¡Ö¸¶¨´óĞ¡µÄÄÚ´æ¿Õ¼ä´æ´¢Êı¾İ.
-* @param[in]  tensor_data -> ÕÅÁ¿½á¹¹Ìå
-* @param[in]  ts_type     -> ÕÅÁ¿ÀàĞÍ
+* å¼ é‡åˆå§‹åŒ–
+* è¯´æ˜: æ¯å®šä¹‰ä¸€ä¸ªå¼ é‡, é¡»æ‰§è¡Œåˆå§‹åŒ–æ“ä½œä»¥è·å–æŒ‡å®šå¤§å°çš„å†…å­˜ç©ºé—´å­˜å‚¨æ•°æ®.
+* @param[in]  tensor_data -> å¼ é‡ç»“æ„ä½“
+* @param[in]  ts_type     -> å¼ é‡ç±»å‹
 							 TENSOR1_STR=>"array"
 							 TENSOR2_STR=>"matrix"
 							 TENSOR3_STR=>"tensor3d"
 							 TENSOR4_STR=>"tensor4d"
-* @param[in]  ts_shape    -> ÕÅÁ¿³ß´ç
+* @param[in]  ts_shape    -> å¼ é‡å°ºå¯¸
 							 TENSOR1_SHAPE[1]={col}
 							 TENSOR2_SHAPE[2]={row, col}
 							 TENSOR3_SHAPE[3]={chnum, row, col}
@@ -26,7 +26,7 @@
 * @par Null
 * Built-By: Zehua Du
 * Date: Mar. 23, 2022
-* Data: Jun. 28, 2022; newly add: ²åÈëÒ»Î¬ÕÅÁ¿; By: Zehua Du
+* Data: Jun. 28, 2022; newly add: æ’å…¥ä¸€ç»´å¼ é‡; By: Zehua Du
 */
 void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 // void TensorInitial(Tensor *tensor_data, int tsnum, int chnum, int row, int col)
@@ -34,11 +34,11 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 	int i, j, k;
 	if (strcmp(ts_type, TENSOR1_STR) == 0)
 	{
-		// ÀàĞÍ¶¨Òå
+		// ç±»å‹å®šä¹‰
 		tensor_data->ts_type = (char*)malloc(5 * sizeof(char));
 		strcpy(tensor_data->ts_type, TENSOR1_STR);
 
-		// ³ß´ç¶¨Òå
+		// å°ºå¯¸å®šä¹‰
 		tensor_data->tsnum = 1;
 		tensor_data->chnum = 1;
 		tensor_data->row = 1;
@@ -49,11 +49,11 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 	}
 	else if (strcmp(ts_type, TENSOR2_STR) == 0)
 	{
-		// ÀàĞÍ¶¨Òå
+		// ç±»å‹å®šä¹‰
 		tensor_data->ts_type = (char*)malloc(6 * sizeof(char));
 		strcpy(tensor_data->ts_type, TENSOR2_STR);
 
-		// ³ß´ç¶¨Òå
+		// å°ºå¯¸å®šä¹‰
 		tensor_data->tsnum = 1;
 		tensor_data->chnum = 1;
 		tensor_data->row = ts_shape[0];
@@ -63,10 +63,10 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 		tensor_data->ts_shape[1] = ts_shape[1];
 
 		// debug
-		// printf("ÀàĞÍ %s, ", tensor_data->ts_type);
-		// printf("³ß´ç [%d, %d]\n", tensor_data->ts_shape[0], tensor_data->ts_shape[1]);
+		// printf("ç±»å‹ %s, ", tensor_data->ts_type);
+		// printf("å°ºå¯¸ [%d, %d]\n", tensor_data->ts_shape[0], tensor_data->ts_shape[1]);
 	}
-	// 3Î¬ÕÅÁ¿
+	// 3ç»´å¼ é‡
 	else if (strcmp(ts_type, TENSOR3_STR) == 0)
 	{
 		tensor_data->ts_type = (char*)malloc(8 * sizeof(char));
@@ -81,10 +81,10 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 		tensor_data->ts_shape[2] = ts_shape[2];
 
 		// debug
-		// printf("ÀàĞÍ %s\n", tensor_data->ts_type);
-		// printf("³ß´ç [%d, %d, %d]\n", tensor_data->ts_shape[0], tensor_data->ts_shape[1], tensor_data->ts_shape[2]);
+		// printf("ç±»å‹ %s\n", tensor_data->ts_type);
+		// printf("å°ºå¯¸ [%d, %d, %d]\n", tensor_data->ts_shape[0], tensor_data->ts_shape[1], tensor_data->ts_shape[2]);
 	}
-	// 4Î¬ÕÅÁ¿
+	// 4ç»´å¼ é‡
 	else if (strcmp(ts_type, TENSOR4_STR) == 0)
 	{
 		tensor_data->ts_type = (char*)malloc(8 * sizeof(char));
@@ -100,8 +100,8 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 		tensor_data->ts_shape[3] = ts_shape[3];
 
 		// debug
-		// printf("ÀàĞÍ %s\n", tensor_data->ts_type);
-		// printf("³ß´ç [%d, %d, %d, %d]\n", tensor_data->ts_shape[0], tensor_data->ts_shape[1], tensor_data->ts_shape[2], tensor_data->ts_shape[3]);
+		// printf("ç±»å‹ %s\n", tensor_data->ts_type);
+		// printf("å°ºå¯¸ [%d, %d, %d, %d]\n", tensor_data->ts_shape[0], tensor_data->ts_shape[1], tensor_data->ts_shape[2], tensor_data->ts_shape[3]);
 	}
 	else
 	{
@@ -109,14 +109,14 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 		exit(EXIT_FAILURE);
 	}
 
-	// ³õÊ¼»¯¸öÊı
+	// åˆå§‹åŒ–ä¸ªæ•°
 	tensor_data->data = (DATA****)malloc(tensor_data->tsnum * sizeof(DATA***));
-	// ³õÊ¼»¯Í¨µÀ
+	// åˆå§‹åŒ–é€šé“
 	for (i = 0; i < tensor_data->tsnum; i++)
 	{
 		tensor_data->data[i] = (DATA***)malloc(tensor_data->chnum * sizeof(DATA**));
 	}
-	// ³õÊ¼»¯µ¥Í¨µÀĞĞ
+	// åˆå§‹åŒ–å•é€šé“è¡Œ
 	for (i = 0; i < tensor_data->tsnum; i++)
 	{
 		for (j = 0; j < tensor_data->chnum; j++)
@@ -124,7 +124,7 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 			tensor_data->data[i][j] = (DATA**)malloc(tensor_data->row * sizeof(DATA*));
 		}
 	}
-	// ³õÊ¼»¯µ¥Í¨µÀÁĞ
+	// åˆå§‹åŒ–å•é€šé“åˆ—
 	for (i = 0; i < tensor_data->tsnum; i++)
 	{
 		for (j = 0; j < tensor_data->chnum; j++)
@@ -139,9 +139,9 @@ void TensorInitial(Tensor* tensor_data, char* ts_type, int* ts_shape)
 
 
 /**
-* ÊÍ·ÅÕÅÁ¿
-* ËµÃ÷: Ã¿ÓÃÍêÒ»¸öÕÅÁ¿, ĞëÖ´ĞĞÊÍ·Å²Ù×÷À´ÊÍ·ÅÄÚ´æ¿Õ¼ä.
-* @param[in]  tensor_data -> ÕÅÁ¿½á¹¹Ìå
+* é‡Šæ”¾å¼ é‡
+* è¯´æ˜: æ¯ç”¨å®Œä¸€ä¸ªå¼ é‡, é¡»æ‰§è¡Œé‡Šæ”¾æ“ä½œæ¥é‡Šæ”¾å†…å­˜ç©ºé—´.
+* @param[in]  tensor_data -> å¼ é‡ç»“æ„ä½“
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -152,7 +152,7 @@ void TensorFree(Tensor* tensor_data)
 {
 	int i, j, k;
 
-	// ÊÍ·ÅÕÅÁ¿ÁĞ
+	// é‡Šæ”¾å¼ é‡åˆ—
 	for (i = 0; i < (tensor_data->tsnum); i++)
 	{
 		for (j = 0; j < (tensor_data->chnum); j++)
@@ -168,7 +168,7 @@ void TensorFree(Tensor* tensor_data)
 		}
 	}
 
-	// ÊÍ·ÅÕÅÁ¿ĞĞ
+	// é‡Šæ”¾å¼ é‡è¡Œ
 	for (i = 0; i < (tensor_data->tsnum); i++)
 	{
 		for (j = 0; j < (tensor_data->chnum); j++)
@@ -181,7 +181,7 @@ void TensorFree(Tensor* tensor_data)
 		}
 	}
 
-	// ÊÍ·ÅÕÅÁ¿Í¨µÀ
+	// é‡Šæ”¾å¼ é‡é€šé“
 	for (i = 0; i < (tensor_data->tsnum); i++)
 	{
 		if (tensor_data->data[i] != NULL)
@@ -191,7 +191,7 @@ void TensorFree(Tensor* tensor_data)
 		}
 	}
 
-	// ÊÍ·ÅÕÅÁ¿
+	// é‡Šæ”¾å¼ é‡
 	if (tensor_data->data[i] != NULL)
 	{
 		free(*tensor_data->data);
@@ -201,11 +201,11 @@ void TensorFree(Tensor* tensor_data)
 
 
 /**
-* ÕÅÁ¿¸³Öµ
-* ËµÃ÷: ÓÃÓÚÕÅÁ¿³õÊ¼»¯Ö®ºó, ½«Êı¾İ¸³Öµ¸øÕÅÁ¿.
-* @param[in]  Tensor         -> ±»¸³ÖµÕÅÁ¿½á¹¹Ìå
-* @param[in]  tensor_data_in -> ¸³ÖµÊı¾İ(Êı×éÊ×Î»µØÖ·)
-* @param[in]  ti_len         -> ¸³ÖµÊı¾İ³¤¶È
+* å¼ é‡èµ‹å€¼
+* è¯´æ˜: ç”¨äºå¼ é‡åˆå§‹åŒ–ä¹‹å, å°†æ•°æ®èµ‹å€¼ç»™å¼ é‡.
+* @param[in]  Tensor         -> è¢«èµ‹å€¼å¼ é‡ç»“æ„ä½“
+* @param[in]  tensor_data_in -> èµ‹å€¼æ•°æ®(æ•°ç»„é¦–ä½åœ°å€)
+* @param[in]  ti_len         -> èµ‹å€¼æ•°æ®é•¿åº¦
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -214,7 +214,7 @@ void TensorFree(Tensor* tensor_data)
 */
 void TensorSet(Tensor* tensor_data, DATA* tensor_data_in, int ti_len)
 {
-	// ¸³ÖµĞè±£Ö¤¸³Öµ±äÁ¿tensor3d_data_inÓë±»¸³Öµ±äÁ¿tensor3d_data³¤¶ÈÒ»ÖÂ
+	// èµ‹å€¼éœ€ä¿è¯èµ‹å€¼å˜é‡tensor3d_data_inä¸è¢«èµ‹å€¼å˜é‡tensor3d_dataé•¿åº¦ä¸€è‡´
 	int m_len = (tensor_data->tsnum) * (tensor_data->chnum) * (tensor_data->row) * (tensor_data->col);
 	if (m_len != ti_len)
 	{
@@ -222,10 +222,10 @@ void TensorSet(Tensor* tensor_data, DATA* tensor_data_in, int ti_len)
 		exit(EXIT_FAILURE);
 	}
 
-	int i, j, k, h;  // ¸öÊı, Í¨µÀ, ĞĞ, ÁĞ
-	int tsr_gain;    // ¸öÊıÔöÒæ
-	int chn_gain;    // Í¨µÀÔöÒæ
-	int row_gain;    // ĞĞÔöÒæ
+	int i, j, k, h;  // ä¸ªæ•°, é€šé“, è¡Œ, åˆ—
+	int tsr_gain;    // ä¸ªæ•°å¢ç›Š
+	int chn_gain;    // é€šé“å¢ç›Š
+	int row_gain;    // è¡Œå¢ç›Š
 	for (i = 0; i < (tensor_data->tsnum); i++)
 	{
 		for (j = 0; j < (tensor_data->chnum); j++)
@@ -237,7 +237,7 @@ void TensorSet(Tensor* tensor_data, DATA* tensor_data_in, int ti_len)
 					tsr_gain = i * (tensor_data->chnum) * (tensor_data->row) * (tensor_data->col);
 					chn_gain = j * (tensor_data->row) * (tensor_data->col);
 					row_gain = k * (tensor_data->col);
-					tensor_data->data[i][j][k][h] = *(tensor_data_in + tsr_gain + chn_gain + row_gain + h); //tensor_data_in[¸öÊı][Í¨µÀ][ĞĞ][ÁĞ];
+					tensor_data->data[i][j][k][h] = *(tensor_data_in + tsr_gain + chn_gain + row_gain + h); //tensor_data_in[ä¸ªæ•°][é€šé“][è¡Œ][åˆ—];
 					// printf("%f\n", tensor_data->data[i][j][k][h]);
 				}
 			}
@@ -247,9 +247,9 @@ void TensorSet(Tensor* tensor_data, DATA* tensor_data_in, int ti_len)
 
 
 /**
-* ÕÅÁ¿ÖµÖÃÁã
-* ËµÃ÷: ÓÃÓÚÕÅÁ¿³õÊ¼»¯Ö®ºó, ½«ÕÅÁ¿¸³ÖµÎª0.
-* @param[in]  tensor_data -> ±»¸³ÖµÕÅÁ¿½á¹¹Ìå
+* å¼ é‡å€¼ç½®é›¶
+* è¯´æ˜: ç”¨äºå¼ é‡åˆå§‹åŒ–ä¹‹å, å°†å¼ é‡èµ‹å€¼ä¸º0.
+* @param[in]  tensor_data -> è¢«èµ‹å€¼å¼ é‡ç»“æ„ä½“
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -258,7 +258,7 @@ void TensorSet(Tensor* tensor_data, DATA* tensor_data_in, int ti_len)
 */
 void TensorPaddingZero(Tensor* tensor_data)
 {
-	int i, j, k, h;  // ¸öÊı, Í¨µÀ, ĞĞ, ÁĞ
+	int i, j, k, h;  // ä¸ªæ•°, é€šé“, è¡Œ, åˆ—
 	for (i = 0; i < (tensor_data->tsnum); i++)
 	{
 		for (j = 0; j < (tensor_data->chnum); j++)
@@ -276,9 +276,9 @@ void TensorPaddingZero(Tensor* tensor_data)
 
 
 /**
-* ²é¿´ÕÅÁ¿
-* ËµÃ÷: ²é¿´ÕÅÁ¿µÄÀàĞÍºÍĞÎ×´.
-* @param[in]  tensor_data -> ±»²é¿´µÄÕÅÁ¿
+* æŸ¥çœ‹å¼ é‡
+* è¯´æ˜: æŸ¥çœ‹å¼ é‡çš„ç±»å‹å’Œå½¢çŠ¶.
+* @param[in]  tensor_data -> è¢«æŸ¥çœ‹çš„å¼ é‡
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -294,7 +294,12 @@ void ViewTensor(Tensor* tensor_data)
 	printf("-------------------------------\n");
 }
 
-//½«TensorºóÁ½Î¬½øĞĞ×ªÖÃ
+/**
+* å¯¹Tensoråä¸¤ç»´ï¼ˆrowï¼Œcolï¼‰è½¬ç½®->ï¼ˆcolï¼Œ rowï¼‰
+* è¯´æ˜: å…¨è¿æ¥ä¹‹å‰ä¸ºäº†è¿›è¡ŒçŸ©é˜µä¹˜æ³•ï¼Œå…ˆå¯¹æƒé‡çŸ©é˜µåä¸¤ä½è¿›è¡Œè½¬ç½®ï¼ˆè¿™é‡Œæ— æ³•è¿›è¡Œâ€œåŸåœ°è½¬ç½®â€ï¼‰
+* @param[in]  in_tensor  -> è½¬ç½®å‰Tensor
+* @param[out] out_tensor -> è½¬ç½®åTensor
+*/
 void TensorTranspose2D(Tensor* in_tensor, Tensor* out_tensor)
 {
 	int in_tsnum, in_chnum, in_row, in_col;
@@ -309,7 +314,7 @@ void TensorTranspose2D(Tensor* in_tensor, Tensor* out_tensor)
 	out_chnum = in_tensor->chnum;
 	out_row = in_tensor->col;
 	out_col = in_tensor->row;
-	TENSORSHAPE out_tensor_shape[4] = { out_tsnum, out_chnum, out_row, out_col };
+	TENSORSHAPE out_tensor_shape[4] = { out_tsnum, out_chnum, out_row, out_col };  //å…ˆå®šä¹‰è½¬ç½®åTensorå¹¶åˆå§‹åŒ–
 	TensorInitial(out_tensor, TENSOR4_STR, out_tensor_shape);
 
 	for (int i = 0; i < in_tsnum; i++)
@@ -319,7 +324,7 @@ void TensorTranspose2D(Tensor* in_tensor, Tensor* out_tensor)
 			for (int k = 0; k < in_row; k++)
 			{
 				for (int l = 0; l < in_col; l++)
-					out_tensor->data[i][j][l][k] = in_tensor->data[i][j][k][l];
+					out_tensor->data[i][j][l][k] = in_tensor->data[i][j][k][l];   //(row, col) -> (col, row)
 			}
 		}
 	}
