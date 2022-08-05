@@ -33,5 +33,5 @@
 #### 1.3编译与运行lenet5_test1/2/3.cpp
 使用VS将相关的CPP/H文件放在一个项目中，注意加入权重参数和图片文件夹，运行可以得到推理结果。（暂未尝试Makefile编译方式）
 #### 1.4使用Matlab进行混编
-相关依赖文件为lenet5_test1_cmex.cpp lenent5_test1_mex.m，先配置好matalb的mex编译器（mex -setup），编译命令为“mex ActivationFunction.cpp ConvOperation.cpp DataDefinition.cpp FullyConnectedFunction.cpp PoolingOperation.cpp NormalizationFunction.cpp GeneralDataType.cpp GetFileNames.cpp GINFO_VAR.cpp StringOperation.cpp LayerParamLoad.cpp Tensor.cpp lenet5_test1_cmex.cpp”即所有相关文件，会生成“ActivationFunction.mexw64”文件，然后再运行lenent5_test1_mex.m
+相关依赖文件为lenet5_test1_cmex.cpp lenent5_test1_mex.m，先配置好matalb的mex编译器（mex -setup），编译命令为“mex ActivationFunction.cpp ConvOperation.cpp DataDefinition.cpp FullyConnectedFunction.cpp PoolingOperation.cpp NormalizationFunction.cpp GeneralDataType.cpp GetFileNames.cpp GINFO_VAR.cpp StringOperation.cpp LayerParamLoad.cpp Tensor.cpp lenet5_test1_cmex.cpp”即编译所有相关文件，会生成“ActivationFunction.mexw64”文件，然后再运行lenent5_test1_mex.m
 
