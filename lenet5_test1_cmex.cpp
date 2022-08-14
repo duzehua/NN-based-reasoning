@@ -69,7 +69,7 @@ void mexFunction(int nlhs,       mxArray *plhs[],
     for (int i = 0; i < len_data; i++)
     {
         fprintf(p,"%f, ", img_data_ptr[i]);
-        if((i+1) % 32 == 0) mexPrintf("\n");
+        // if((i+1) % 32 == 0) mexPrintf("\n");
         // mexPrintf("%f   ", img_data_ptr[i]);
     }
     fclose(p);
