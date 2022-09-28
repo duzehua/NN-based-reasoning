@@ -4,12 +4,13 @@
 
 #include "Tensor.h"
 #include "GINFO_VAR.h"
+#include "FloatFunction.h"
 
 /**
-* ÕÅÁ¿Æ½ÆÌ
-* ËµÃ÷: ÓÃÓÚ¾í»ıÄ£¿éÖ®ºó, È«Á¬½ÓÄ£¿éÖ®Ç°, ¶ÔÕÅÁ¿½øĞĞÆ½ÆÌÕ¹¿ª.
-* @param[in]  conved_Tsr   -> ´ıÕ¹¿ªµÄÕÅÁ¿
-* @param[in]  flatten_Data -> Õ¹¿ªºóµÄÕÅÁ¿
+* å¼ é‡å¹³é“º
+* è¯´æ˜: ç”¨äºå·ç§¯æ¨¡å—ä¹‹å, å…¨è¿æ¥æ¨¡å—ä¹‹å‰, å¯¹å¼ é‡è¿›è¡Œå¹³é“ºå±•å¼€.
+* @param[in]  conved_Tsr   -> å¾…å±•å¼€çš„å¼ é‡
+* @param[in]  flatten_Data -> å±•å¼€åçš„å¼ é‡
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -21,18 +22,18 @@ void TensorFlatten(Tensor *conved_Tsr, Tensor *flatten_Data)
     int m_len = (conved_Tsr->chnum) * (conved_Tsr->row) * (conved_Tsr->col);
     // flatten_Data = (DATA*)malloc(m_len * sizeof(DATA));
 
-    // ĞĞ´ú±í¸öÊı, ÁĞ´ú±í¾ßÌåµÄÊıÖµ
+    // è¡Œä»£è¡¨ä¸ªæ•°, åˆ—ä»£è¡¨å…·ä½“çš„æ•°å€¼
     TENSOR2_SHAPE[0] = conved_Tsr->tsnum;
     TENSOR2_SHAPE[1] = m_len;
 
     // MatrixInitial(flatten_Data, conved_Tsr->tsnum, m_len);
     TensorInitial(flatten_Data, TENSOR2_STR, TENSOR2_SHAPE);
 
-    int i, j, k, h;  // ¸öÊı, Í¨µÀ, ĞĞ, ÁĞ
-    int tsr_gain;    // ¸öÊıÔöÒæ
-    int chn_gain;    // Í¨µÀÔöÒæ
-    int row_gain;    // ĞĞÔöÒæ
-    int idx_fla_d;  // Õ¹¿ªÊı×éË÷Òı
+    int i, j, k, h;  // ä¸ªæ•°, é€šé“, è¡Œ, åˆ—
+    int tsr_gain;    // ä¸ªæ•°å¢ç›Š
+    int chn_gain;    // é€šé“å¢ç›Š
+    int row_gain;    // è¡Œå¢ç›Š
+    int idx_fla_d;  // å±•å¼€æ•°ç»„ç´¢å¼•
  	for (i = 0; i < (conved_Tsr->tsnum); i++)
     {
         idx_fla_d = 0;
@@ -53,12 +54,12 @@ void TensorFlatten(Tensor *conved_Tsr, Tensor *flatten_Data)
 
 
 /**
-* È«Á¬½Ó²Ù×÷
-* ËµÃ÷: ¶ÔÊäÈëÊı¾İ½øĞĞÈ«Á¬½Ó.
-* @param[in]  m_data_in    -> MxN È«Á¬½Ó²Ù×÷ÊäÈë   [ÊäÈë¸öÊı-M,   ÊäÈë½ÚµãÊı-N]
-* @param[in]  weight       -> PxN   È«Á¬½Ó²Ù×÷È¨ÖØ [Êä³ö½ÚµãÊı-P, ÊäÈë½ÚµãÊı-N]
-* @param[in]  bias         -> Px1   È«Á¬½Ó²Ù×÷Æ«ÖÃ [Êä³ö½ÚµãÊı-P]
-* @param[in]  m_data_out   -> MxP È«Á¬½Ó²Ù×÷Êä³ö   [Êä³ö¸öÊı-M,   Êä³ö½ÚµãÊı-P]
+* å…¨è¿æ¥æ“ä½œ
+* è¯´æ˜: å¯¹è¾“å…¥æ•°æ®è¿›è¡Œå…¨è¿æ¥.
+* @param[in]  m_data_in    -> MxN å…¨è¿æ¥æ“ä½œè¾“å…¥   [è¾“å…¥ä¸ªæ•°-M,   è¾“å…¥èŠ‚ç‚¹æ•°-N]
+* @param[in]  weight       -> PxN   å…¨è¿æ¥æ“ä½œæƒé‡ [è¾“å‡ºèŠ‚ç‚¹æ•°-P, è¾“å…¥èŠ‚ç‚¹æ•°-N]
+* @param[in]  bias         -> Px1   å…¨è¿æ¥æ“ä½œåç½® [è¾“å‡ºèŠ‚ç‚¹æ•°-P]
+* @param[in]  m_data_out   -> MxP å…¨è¿æ¥æ“ä½œè¾“å‡º   [è¾“å‡ºä¸ªæ•°-M,   è¾“å‡ºèŠ‚ç‚¹æ•°-P]
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -69,16 +70,16 @@ void FullConnected(Tensor *m_data_in, Tensor *weight, Tensor *bias, Tensor *m_da
 {
     
     // 1*N x N*P => 1*P
-    // weight PĞĞ£¬NÁĞ
-    // Êä³ö128£¬ÊäÈë5408
-    int data_o_num = (m_data_in->row);  // ÊäÈë(³ö)¸öÕÅÁ¿¸öÊı M x N -> M
-    int data_i_dim = (m_data_in->col);  // Æ½ÆÌÕ¹¿ªµÄµ¥¸öÕÅÁ¿ M x N -> N
+    // weight Pè¡Œï¼ŒNåˆ—
+    // è¾“å‡º128ï¼Œè¾“å…¥5408
+    int data_o_num = (m_data_in->row);  // è¾“å…¥(å‡º)ä¸ªå¼ é‡ä¸ªæ•° M x N -> M
+    int data_i_dim = (m_data_in->col);  // å¹³é“ºå±•å¼€çš„å•ä¸ªå¼ é‡ M x N -> N
 
-    int data_o_dim = (weight->row);     // È¨ÖØµÄÊä³öÎ¬¶È P x N -> P
-    int data_w_dim = (weight->col);     // È¨ÖØµÄÊäÈëÎ¬¶È P x N -> N
+    int data_o_dim = (weight->row);     // æƒé‡çš„è¾“å‡ºç»´åº¦ P x N -> P
+    int data_w_dim = (weight->col);     // æƒé‡çš„è¾“å…¥ç»´åº¦ P x N -> N
 
     //int data_b_dim = (bias->row);
-    int data_b_len = (bias->col);       // Æ«ÖÃµÄÎ¬¶È£¬µÈÓÚÊä³öÎ¬¶È, P
+    int data_b_len = (bias->col);       // åç½®çš„ç»´åº¦ï¼Œç­‰äºè¾“å‡ºç»´åº¦, P
 
     if (data_i_dim != data_w_dim)  // N
     {
@@ -99,7 +100,7 @@ void FullConnected(Tensor *m_data_in, Tensor *weight, Tensor *bias, Tensor *m_da
 
     int idx_M, idx_P, idx_N, h;
 
-    // ±éÀúÃ¿¸öÑù±¾
+    // éå†æ¯ä¸ªæ ·æœ¬
     //[idx_num][idx_P]
     // M * ((1 x N) x (N x P) + P) => M * (1 x P)
     // data_o_num * ((1 x data_i_dim) x (data_i_dim x data_o_dim) + data_o_dim)
@@ -110,7 +111,9 @@ void FullConnected(Tensor *m_data_in, Tensor *weight, Tensor *bias, Tensor *m_da
             m_data_out->data[0][0][idx_M][idx_P] = bias->data[0][0][0][idx_P]; 
             for (idx_N = 0; idx_N < data_i_dim; idx_N++)  // M
             {
-                m_data_out->data[0][0][idx_M][idx_P] = m_data_out->data[0][0][idx_M][idx_P] + (m_data_in->data[0][0][idx_M][idx_N])*(weight->data[0][0][idx_P][idx_N]);
+                // m_data_out->data[0][0][idx_M][idx_P] = m_data_out->data[0][0][idx_M][idx_P] + (m_data_in->data[0][0][idx_M][idx_N])*(weight->data[0][0][idx_P][idx_N]);
+		// è¿ç®—ç¬¦æ›¿æ¢
+		m_data_out->data[0][0][idx_M][idx_P] = floatAdd(m_data_out->data[0][0][idx_M][idx_P], floatProd(m_data_in->data[0][0][idx_M][idx_N], weight->data[0][0][idx_N][idx_P]));
             }
         }
     }
