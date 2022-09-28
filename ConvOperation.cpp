@@ -1,7 +1,7 @@
 /**
 * @file ConvOperation
-* @ ¾í»ı²Ù×÷,¶Ô¾ØÕó\3Î¬ÕÅÁ¿\4Î¬ÕÅÁ¿µÄ¾í»ı
-* @details Ä¿Ç°¾í»ıÖ§³Ö2ÖÖĞÎÊ½µÄ¾í»ı,
+* @ å·ç§¯æ“ä½œ,å¯¹çŸ©é˜µ\3ç»´å¼ é‡\4ç»´å¼ é‡çš„å·ç§¯
+* @details ç›®å‰å·ç§¯æ”¯æŒ2ç§å½¢å¼çš„å·ç§¯,
 * @Zehua Du
 * @date Mar. 22, 2022
 * @version v1.0
@@ -20,17 +20,18 @@
 
 #include "Tensor.h"
 #include "GINFO_VAR.h"
+#include "FloatFunction.h"
 
 
 /**
-* ÕÅÁ¿¾í»ı
-* ËµÃ÷: ¾ØÕóÓë¾ØÕóµÄ¾í»ıÔËËã.
-* @param[in]  conved_Tsr  -> ±»¾í»ıÕÅÁ¿½á¹¹Ìå
-* @param[in]  conv_kel    -> ¾í»ıºËÕÅÁ¿½á¹¹Ìå
-* @param[in]  conv_stride -> ¾í»ıÔËËã²½³¤½á¹¹Ìå[conv_stride.row, conv_stride.col]
-* @param[in]  conv_bias   -> ¾í»ı²Ù×÷Æ«ÖÃ(Ä¬ÈÏ0)
-* @param[in]  conv_mode   -> ¾í»ıÄ£Ê½("FULL", "VALID", "SAME") https://zhuanlan.zhihu.com/p/62760780
-* @param[in]  conv_result -> ¾í»ı½á¹û(´«ÈëÇ°½öĞè¶¨Òå±äÁ¿)
+* å¼ é‡å·ç§¯
+* è¯´æ˜: çŸ©é˜µä¸çŸ©é˜µçš„å·ç§¯è¿ç®—.
+* @param[in]  conved_Tsr  -> è¢«å·ç§¯å¼ é‡ç»“æ„ä½“
+* @param[in]  conv_kel    -> å·ç§¯æ ¸å¼ é‡ç»“æ„ä½“
+* @param[in]  conv_stride -> å·ç§¯è¿ç®—æ­¥é•¿ç»“æ„ä½“[conv_stride.row, conv_stride.col]
+* @param[in]  conv_bias   -> å·ç§¯æ“ä½œåç½®(é»˜è®¤0)
+* @param[in]  conv_mode   -> å·ç§¯æ¨¡å¼("FULL", "VALID", "SAME") https://zhuanlan.zhihu.com/p/62760780
+* @param[in]  conv_result -> å·ç§¯ç»“æœ(ä¼ å…¥å‰ä»…éœ€å®šä¹‰å˜é‡)
 * @param[out] Null
 * @retval Null
 * @par Null
@@ -39,37 +40,37 @@
 */
 void Conv2(Tensor* conved_Tsr, Tensor* conv_kel, CONVSTRIDE* conv_stride, Tensor* conv_bias, char* conv_mode, Tensor* conv_result)
 {
-	// ¶ÔÃ¿¸öÕÅÁ¿, ¶ÔÃ¿¸öÍ¨µÀµ¥¶À¾í»ı, µ«Ó¦ÏÈ¶¨Òå½á¹ûÕÅÁ¿ºÍ½á¹û¾ØÕó, ¶ÔÃ¿¸öÍ¨µÀ¸³Öµ¸ø¾ØÕó, È»ºó¾ØÕó¾í»ıÖ®ºó¸³Öµ¸øÕÅÁ¿
+	// å¯¹æ¯ä¸ªå¼ é‡, å¯¹æ¯ä¸ªé€šé“å•ç‹¬å·ç§¯, ä½†åº”å…ˆå®šä¹‰ç»“æœå¼ é‡å’Œç»“æœçŸ©é˜µ, å¯¹æ¯ä¸ªé€šé“èµ‹å€¼ç»™çŸ©é˜µ, ç„¶åçŸ©é˜µå·ç§¯ä¹‹åèµ‹å€¼ç»™å¼ é‡
 	int i, j, k, h;
-	// int ci, cj, ck, ch; //¾í»ı²Ù×÷×¨ÓÃË÷Òı, ±ÜÃâ·ûºÅ»ìÂÒ
+	// int ci, cj, ck, ch; //å·ç§¯æ“ä½œä¸“ç”¨ç´¢å¼•, é¿å…ç¬¦å·æ··ä¹±
 
 	int ck_row = conv_kel->row;
 	int ck_col = conv_kel->col;
 
-	// ÏŞ¶¨¾í»ıºË³ß´çÎªÆæÊıÇÒĞĞÁĞÒ»ÖÂ, ²»½ÓÊÜÅ¼ÊıÊäÈë
+	// é™å®šå·ç§¯æ ¸å°ºå¯¸ä¸ºå¥‡æ•°ä¸”è¡Œåˆ—ä¸€è‡´, ä¸æ¥å—å¶æ•°è¾“å…¥
 	if (((ck_row % 2) == 0) && (ck_row != ck_col))
 	{
 		fprintf(stderr, "ERROR: Conv2: conv_kel => (shape[%d x %d] dimensions shall be odd and row == col)\n", ck_row, ck_col);
 		exit(EXIT_FAILURE);
 	}
 
-	// ÏŞ¶¨¾í»ıºËÍ¨µÀÓëÆ«ÖÃ³¤¶ÈÒ»ÖÂ
+	// é™å®šå·ç§¯æ ¸é€šé“ä¸åç½®é•¿åº¦ä¸€è‡´
 	if ((conv_result->chnum) != (conv_bias->col))
 	{
 		fprintf(stderr, "ERROR: Conv2: conv_kel->chnum len[%d] != conv_bias->col len[%d])\n", conv_result->chnum, conv_bias->col);
 		exit(EXIT_FAILURE);
 	}
 
-	// È·¶¨conved_TsrÑÓÍØ°ë¿í
+	// ç¡®å®šconved_Tsrå»¶æ‹“åŠå®½
 	int cm_ext = (ck_row - 1) >> 1;
-	// printf("ÍØÕ¹°ë¿í%d\n", cm_ext);
+	// printf("æ‹“å±•åŠå®½%d\n", cm_ext);
 
-	int ext_half_len; // ÑÓÍØ°ë¿í
-	// ¸ù¾İ¾í»ıÄ£Ê½È·¶¨extend_tensor³ß´ç
-	// ÈıÖÖÄ£Ê½Çø±ğ, ²Î¿¼: https://zhuanlan.zhihu.com/p/62760780
+	int ext_half_len; // å»¶æ‹“åŠå®½
+	// æ ¹æ®å·ç§¯æ¨¡å¼ç¡®å®šextend_tensorå°ºå¯¸
+	// ä¸‰ç§æ¨¡å¼åŒºåˆ«, å‚è€ƒ: https://zhuanlan.zhihu.com/p/62760780
 	if (strcmp(conv_mode, FULL) == 0)
 	{
-		// ¼ÆËãÑÓÍØÕÅÁ¿µÄ³¤¿í
+		// è®¡ç®—å»¶æ‹“å¼ é‡çš„é•¿å®½
 		ext_half_len = (conv_kel->row - 1);
 	}
 	else if (strcmp(conv_mode, SAME) == 0)
@@ -86,16 +87,16 @@ void Conv2(Tensor* conved_Tsr, Tensor* conv_kel, CONVSTRIDE* conv_stride, Tensor
 		exit(EXIT_FAILURE);
 	}
 
-	// printf("ÑÓÍØ°ë¿í: %d\n", ext_half_len);
+	// printf("å»¶æ‹“åŠå®½: %d\n", ext_half_len);
 
-	// ¸´ÖÆ conved_Tsr µ½ extend_tensor ÓÃÓÚÊµ¼ÊÔËËã
+	// å¤åˆ¶ conved_Tsr åˆ° extend_tensor ç”¨äºå®é™…è¿ç®—
 	Tensor extend_tensor;
 	TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
 	TENSOR4_SHAPE[1] = conved_Tsr->chnum;
 	TENSOR4_SHAPE[2] = (conved_Tsr->row) + (ext_half_len << 1);
 	TENSOR4_SHAPE[3] = (conved_Tsr->col) + (ext_half_len << 1);
-	// printf("ÑÓÍØÔö¿íÁ¿ %d\n", ext_half_len<<1);
-	// printf("ÑÓÍØÕÅÁ¿\n");
+	// printf("å»¶æ‹“å¢å®½é‡ %d\n", ext_half_len<<1);
+	// printf("å»¶æ‹“å¼ é‡\n");
 	TensorInitial(&extend_tensor, TENSOR4_STR, TENSOR4_SHAPE);
 	TensorPaddingZero(&extend_tensor);
 
@@ -116,10 +117,10 @@ void Conv2(Tensor* conved_Tsr, Tensor* conv_kel, CONVSTRIDE* conv_stride, Tensor
 
 	//for (i=0;i<extend_tensor.tsnum;i++)
 	//{
-	//    printf("extend_tensor¸öÊı %d ============================================\n", i);
+	//    printf("extend_tensorä¸ªæ•° %d ============================================\n", i);
 	//    for (j=0;j<extend_tensor.chnum;j++)
 	//    {
-	//        printf("Í¨µÀ %d ------------------------------------------\n", j);
+	//        printf("é€šé“ %d ------------------------------------------\n", j);
 	//        for (k = 0; k < extend_tensor.row; k++)
 	//        {
 	//            for (h = 0; h < extend_tensor.col; h++)
@@ -133,13 +134,13 @@ void Conv2(Tensor* conved_Tsr, Tensor* conv_kel, CONVSTRIDE* conv_stride, Tensor
 	//    printf("\n\n\n");
 	//}
 
-   // ¾í»ı½á¹ûÕÅÁ¿
-   // ²Î¿¼: https://oldtang.com/6775.html
+   // å·ç§¯ç»“æœå¼ é‡
+   // å‚è€ƒ: https://oldtang.com/6775.html
 	TENSOR4_SHAPE[0] = conved_Tsr->tsnum;
-	TENSOR4_SHAPE[1] = conv_kel->tsnum;   // Êä³öÕÅÁ¿µÄÍ¨µÀÓë¾í»ıºË¸öÊıÒ»ÖÂ
-	TENSOR4_SHAPE[2] = floor(((conved_Tsr->row) + (ext_half_len << 1) - ck_row) / conv_stride->row) + 1;  // Êä³öÕÅÁ¿µÄĞĞÊıÎª conved_Tsr->row + ÑÓÍØ°ë¿í*2
-	TENSOR4_SHAPE[3] = floor(((conved_Tsr->col) + (ext_half_len << 1) - ck_row) / conv_stride->col) + 1;  // Êä³öÕÅÁ¿µÄÁĞÊıÎª conved_Tsr->col + ÑÓÍØ°ë¿í*2
-	// printf("½á¹û¾í»ı\n");
+	TENSOR4_SHAPE[1] = conv_kel->tsnum;   // è¾“å‡ºå¼ é‡çš„é€šé“ä¸å·ç§¯æ ¸ä¸ªæ•°ä¸€è‡´
+	TENSOR4_SHAPE[2] = floor(((conved_Tsr->row) + (ext_half_len << 1) - ck_row) / conv_stride->row) + 1;  // è¾“å‡ºå¼ é‡çš„è¡Œæ•°ä¸º conved_Tsr->row + å»¶æ‹“åŠå®½*2
+	TENSOR4_SHAPE[3] = floor(((conved_Tsr->col) + (ext_half_len << 1) - ck_row) / conv_stride->col) + 1;  // è¾“å‡ºå¼ é‡çš„åˆ—æ•°ä¸º conved_Tsr->col + å»¶æ‹“åŠå®½*2
+	// printf("ç»“æœå·ç§¯\n");
 	TensorInitial(conv_result, TENSOR4_STR, TENSOR4_SHAPE);
 	TensorPaddingZero(conv_result);
 
@@ -149,58 +150,62 @@ void Conv2(Tensor* conved_Tsr, Tensor* conv_kel, CONVSTRIDE* conv_stride, Tensor
 	int et_i, et_j, et_k, et_h;  // extend_mat
 
 	/*
-								¸ö   Í¨µÀ   ĞĞ    ÁĞ
-	±»¾í»ıÕÅÁ¿Ë÷Òı conved_Tsr    [cd_i][cd_j][cd_k][cd_h]
-	¾í»ıºËË÷Òı     conv_kel      [ck_i ][ck_j][ck_k][ck_h]
-	¾í»ı½á¹ûË÷Òı   conv_result   [rs_i][rs_j][rs_k][rs_h]
-	ÍØÕ¹¾í»ıË÷Òı   extend_tensor [et_i][et_j][et_k][et_h]
+								ä¸ª   é€šé“   è¡Œ    åˆ—
+	è¢«å·ç§¯å¼ é‡ç´¢å¼• conved_Tsr    [cd_i][cd_j][cd_k][cd_h]
+	å·ç§¯æ ¸ç´¢å¼•     conv_kel      [ck_i ][ck_j][ck_k][ck_h]
+	å·ç§¯ç»“æœç´¢å¼•   conv_result   [rs_i][rs_j][rs_k][rs_h]
+	æ‹“å±•å·ç§¯ç´¢å¼•   extend_tensor [et_i][et_j][et_k][et_h]
 	*/
-	// ²Î¿¼: https://www.cnblogs.com/chumingqian/articles/11495364.html
-	// Ã¿¸ö¾í»ıºËÍ¨µÀ¶ÔÓ¦1¸öÊä³ö
-	// TODO ¿É²¢ĞĞ´¦Àí
-	// TODO ĞèÒªÈ·¶¨ conv_stride ·ÅÖÃÎ»ÖÃÊÇ·ñÕıÈ·
+	// å‚è€ƒ: https://www.cnblogs.com/chumingqian/articles/11495364.html
+	// æ¯ä¸ªå·ç§¯æ ¸é€šé“å¯¹åº”1ä¸ªè¾“å‡º
+	// TODO å¯å¹¶è¡Œå¤„ç†
+	// TODO éœ€è¦ç¡®å®š conv_stride æ”¾ç½®ä½ç½®æ˜¯å¦æ­£ç¡®
 	// printf("%d\n", conv_stride->row);
 	// #pragma omp parallel for num_threads(6)
 	//DATA tmp = 0.0, tmp1 = 0.0;
 
 	//printf("CONV2: \n");
-	for (cd_i = 0; cd_i < conved_Tsr->tsnum; cd_i++)   // ±éÀú"±»¾í»ı"¸öÊı => ¶ÔÓ¦Êµ¼ÊÊä³öµÄ¸öÊı
+	for (cd_i = 0; cd_i < conved_Tsr->tsnum; cd_i++)   // éå†"è¢«å·ç§¯"ä¸ªæ•° => å¯¹åº”å®é™…è¾“å‡ºçš„ä¸ªæ•°
 	{
 		//printf("level - 1\n");
-		for (ck_j = 0; ck_j < conv_kel->tsnum; ck_j++) // ±éÀú"¾í»ıºË"¸öÊı => ¶ÔÓ¦Êµ¼ÊÊä³öÍ¨µÀÊı m
-		//for (ck_j = 0; ck_j < conv_kel->chnum; ck_j++) // ±éÀú"¾í»ıºË"Í¨µÀ => ¶ÔÓ¦Êµ¼ÊÊä³öÍ¨µÀÊı
+		for (ck_j = 0; ck_j < conv_kel->tsnum; ck_j++) // éå†"å·ç§¯æ ¸"ä¸ªæ•° => å¯¹åº”å®é™…è¾“å‡ºé€šé“æ•° m
+		//for (ck_j = 0; ck_j < conv_kel->chnum; ck_j++) // éå†"å·ç§¯æ ¸"é€šé“ => å¯¹åº”å®é™…è¾“å‡ºé€šé“æ•°
 		{
 			//printf("level - 2\n");
-		   // Ã¿Í¨µÀ\ĞĞ\ÁĞ,¶ÔÓ¦µÄºË´óĞ¡ÄÚÈİ½øĞĞ¾í»ı, È»ºóÑ­»·Íâ + bias
-			for (cd_k = 0; cd_k < conv_result->row; cd_k++)     // ±éÀú"¾í»ı½á¹ûÕÅÁ¿"ĞĞ => ¶ÔÓ¦Êµ¼ÊÊä³öĞĞ (+²½³¤) k
+		   // æ¯é€šé“\è¡Œ\åˆ—,å¯¹åº”çš„æ ¸å¤§å°å†…å®¹è¿›è¡Œå·ç§¯, ç„¶åå¾ªç¯å¤– + bias
+			for (cd_k = 0; cd_k < conv_result->row; cd_k++)     // éå†"å·ç§¯ç»“æœå¼ é‡"è¡Œ => å¯¹åº”å®é™…è¾“å‡ºè¡Œ (+æ­¥é•¿) k
 			{
 				//printf("level - 3\n");
-				for (cd_h = 0; cd_h < conv_result->col; cd_h++) // ±éÀú"¾í»ı½á¹ûÕÅÁ¿"ÁĞ => ¶ÔÓ¦Êµ¼ÊÊä³öÁĞ (+²½³¤) j
+				for (cd_h = 0; cd_h < conv_result->col; cd_h++) // éå†"å·ç§¯ç»“æœå¼ é‡"åˆ— => å¯¹åº”å®é™…è¾“å‡ºåˆ— (+æ­¥é•¿) j
 				{
 					//printf("level - 4\n");
-					for (cd_j = 0; cd_j < conved_Tsr->chnum; cd_j++)     // ±éÀú"±»¾í»ıÕÅÁ¿"Í¨µÀ n
+					for (cd_j = 0; cd_j < conved_Tsr->chnum; cd_j++)     // éå†"è¢«å·ç§¯å¼ é‡"é€šé“ n
 					{
 						//printf("level - 5\n");
-					   // µ±Ç°µãÎªºËÖĞĞÄ, ¶ÔÓ¦µÄºË´óĞ¡ÕÅÁ¿Êı¾İ, ¾í»ı
-					   // += extend_tensor.data[cd_i][cd_j][ºË·¶Î§][ºË·¶Î§] .* conv_kel->data[0][ck_j][ºË·¶Î§][ºË·¶Î§]
-						for (ck_k = 0; ck_k < conv_kel->row; ck_k++)     // ±éÀú"¾í»ıºË"ĞĞ i
+					   // å½“å‰ç‚¹ä¸ºæ ¸ä¸­å¿ƒ, å¯¹åº”çš„æ ¸å¤§å°å¼ é‡æ•°æ®, å·ç§¯
+					   // += extend_tensor.data[cd_i][cd_j][æ ¸èŒƒå›´][æ ¸èŒƒå›´] .* conv_kel->data[0][ck_j][æ ¸èŒƒå›´][æ ¸èŒƒå›´]
+						for (ck_k = 0; ck_k < conv_kel->row; ck_k++)     // éå†"å·ç§¯æ ¸"è¡Œ i
 						{
 							// #pragma omp parallel 
 							// printf("level - 6\n");
-							for (ck_h = 0; ck_h < conv_kel->col; ck_h++) // ±éÀú"¾í»ıºË"ÁĞ j
+							for (ck_h = 0; ck_h < conv_kel->col; ck_h++) // éå†"å·ç§¯æ ¸"åˆ— j
 							{
 								// printf("level - 7\n");
 								// printf("[%d][%d][%d][%d]\n", conved_Tsr->tsnum, conv_kel->chnum, conv_result->row, conv_result->col);
 								// printf("[%d][%d][%d][%d]\n", cd_i, ck_j, cd_k, cd_h);
 								// printf("[%d][%d][%d][%d] => %f\n", cd_i, cd_j, cd_k + ck_k, cd_h + ck_h, extend_tensor.data[cd_i][cd_j][cd_k + ck_k][cd_h + ck_h]);
-								conv_result->data[cd_i][ck_j][cd_k][cd_h] += (extend_tensor.data[cd_i][cd_j][cd_k * (conv_stride->row) + ck_k][cd_h * (conv_stride->col) + ck_h] * conv_kel->data[ck_j][cd_j][ck_k][ck_h]);
-								//printf("¾í»ı½á¹û£º%f\n", conv_result->data[cd_i][ck_j][cd_k][cd_h]);
+								// conv_result->data[cd_i][ck_j][cd_k][cd_h] += (extend_tensor.data[cd_i][cd_j][cd_k * (conv_stride->row) + ck_k][cd_h * (conv_stride->col) + ck_h] * conv_kel->data[ck_j][cd_j][ck_k][ck_h]);
+								// è¿ç®—ç¬¦æ›¿æ¢
+								conv_result->data[cd_i][ck_j][cd_k][cd_h] = floatAdd(conv_result->data[cd_i][ck_j][cd_k][cd_h], floatProd(extend_tensor.data[cd_i][cd_j][cd_k * (conv_stride->row) + ck_k][cd_h * (conv_stride->col) + ck_h], conv_kel->data[ck_j][cd_j][ck_k][ck_h]));
+								//printf("å·ç§¯ç»“æœï¼š%f\n", conv_result->data[cd_i][ck_j][cd_k][cd_h]);
 							}
 						}
 					}
-					// TODO ¼ÓÆ«ÖÃ, ĞèÈ·¶¨ÊÇ·ñ¶ÔÍêÕûºË¾í»ı¼ÓÒ»´ÎÆ«ÖÃ
-					// ²Î¿¼: https://poloclub.github.io/cnn-explainer/
-					conv_result->data[cd_i][ck_j][cd_k][cd_h] += conv_bias->data[0][0][0][ck_j]; // 1¸öºËÊä³öÍ¨µÀ¶ÔÓ¦Ò»¸ö¾í»ı
+					// TODO åŠ åç½®, éœ€ç¡®å®šæ˜¯å¦å¯¹å®Œæ•´æ ¸å·ç§¯åŠ ä¸€æ¬¡åç½®
+					// å‚è€ƒ: https://poloclub.github.io/cnn-explainer/
+					// conv_result->data[cd_i][ck_j][cd_k][cd_h] += conv_bias->data[0][0][0][ck_j]; // 1ä¸ªæ ¸è¾“å‡ºé€šé“å¯¹åº”ä¸€ä¸ªå·ç§¯
+					// è¿ç®—ç¬¦æ›¿æ¢
+					conv_result->data[cd_i][ck_j][cd_k][cd_h] = floatAdd(conv_result->data[cd_i][ck_j][cd_k][cd_h], conv_bias->data[0][0][0][ck_j]); // 1ä¸ªæ ¸è¾“å‡ºé€šé“å¯¹åº”ä¸€ä¸ªå·ç§¯
 				}
 			}
 		}
