@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-unsigned int bitRep(float x) {  // ·µ»ØµÄÊÇÎŞ·ûºÅµÄÕûÊı£¬Óëfloat2BiasExpÅäºÏµÃµ½ÎŞÆ«Ö¸Êı
+unsigned int bitRep(float x) {  // è¿”å›çš„æ˜¯æ— ç¬¦å·çš„æ•´æ•°ï¼Œä¸float2BiasExpé…åˆå¾—åˆ°æ— åæŒ‡æ•°
 	union {
 		float fl;
 		unsigned int i;
@@ -26,7 +26,7 @@ int isNormal(float x) { // Returns 1 if x is normal, 0 if x is denormal
 }
 
 
-// windowsÏÂlongÎª32Î»£¬long longÎª64Î»£¬º¯Êı·µ»ØxµÄĞ¡Êı²¿·Ö³ËÒÔ2^23
+// windowsä¸‹longä¸º32ä½ï¼Œlong longä¸º64ä½ï¼Œå‡½æ•°è¿”å›xçš„å°æ•°éƒ¨åˆ†ä¹˜ä»¥2^23
 long long float2Frac(float x) { // returns the fractional part of x times 2^23
 	// Special cases
 	if (isinf(x)) return 0;
@@ -35,7 +35,7 @@ long long float2Frac(float x) { // returns the fractional part of x times 2^23
 	unsigned int xi = bitRep(x);
 	long long frac = xi & ((1 << 23) - 1); // May be denormal!
 	if (isNormal(x) == 0) return frac; // denormal... no 1.
-	return frac | (1 << 23); // Or in the 1. in front of the decimal!£¨¹æ¸ñ»¯£©
+	return frac | (1 << 23); // Or in the 1. in front of the decimal!ï¼ˆè§„æ ¼åŒ–ï¼‰
 }
 
 int float2Exp(float x) { // returns the unbiased exponent of x
@@ -88,7 +88,7 @@ void floatPrint(char const* pref, float a) {
 }
 
 float floatProd(float a, float b) {
-	/* Your code to compute the product of a and b without doing a*b goes here */
+
 	int sign_bit_value;
 	// int sign_bit_value_b;
 	int exponent_product;
@@ -104,7 +104,7 @@ float floatProd(float a, float b) {
 	fractional_product = fractional_product >> 23;
 	// printf("fractional_product: %lld\n", fractional_product);
 	// printf("exponent_product: %d\n", exponent_product);
-	// ·ÀÖ¹Òç³ö£¬½øĞĞ¹æ¸ñ»¯
+	// é˜²æ­¢æº¢å‡ºï¼Œè¿›è¡Œè§„æ ¼åŒ–
 	if (fractional_product > pow(2, 24)) {
 		fractional_product = fractional_product >> 1;
 		exponent_product++;
@@ -162,36 +162,36 @@ float floatAdd(float a, float b)
 	float result;
 	//printf("sign: %d, %d\n", float2Sign(a), float2Sign(b));
 
-	// TODO: Ò»ÕıÒ»¸ºÏà¼Ó£¬×îÖÕ½á¹ûÈçºÎ¼ÆËã£¿
+	
 	if (float2Sign(a) != float2Sign(b))
 	{
-		// Èç¹ûaÎª¸º£¬bÎªÕı£¬½»»»Á½ÕßË³Ğò¼´¿É
+		// å¦‚æœaä¸ºè´Ÿï¼Œbä¸ºæ­£ï¼Œäº¤æ¢ä¸¤è€…é¡ºåºå³å¯
 		if (float2Sign(b) == 0)
 		{
 			tmp = a;
 			a = b;
 			b = tmp;
 		}
-		deltaE = float2Exp(a) - float2Exp(b);  // Ö¸ÊıÖ®²î
+		deltaE = float2Exp(a) - float2Exp(b);  // æŒ‡æ•°ä¹‹å·®
 
-		if (float2Sign(a) == 0)   // aÎªÕıÊı£¬bÎª¸ºÊı
+		if (float2Sign(a) == 0)   // aä¸ºæ­£æ•°ï¼Œbä¸ºè´Ÿæ•°
 		{
 			//printf("deltaE: %d\n", deltaE);
-			if (deltaE > 0)   // aÖ¸Êı±Èb´ó
+			if (deltaE > 0)   // aæŒ‡æ•°æ¯”bå¤§
 			{
-				sign_bit_value = 0;  //ºÍÎªÕıÊı				
-				// TODO: µ±Á½ÕßÖ®²îºÜĞ¡Ê±£¬×îÖÕ½á¹ûÖ¸ÊıÖµÈçºÎÈ¡£¿
+				sign_bit_value = 0;  //å’Œä¸ºæ­£æ•°				
+				
 				exponent_add = float2Exp(a);
-				if ((float2Frac(a) - (float2Frac(b) >> deltaE)) > 0)  // aĞ¡Êı²¿·Ö´óÓÚbĞ¡Êı²¿·Ö,×îÖÕ½á¹ûÓ¦¸ÃÎªÕıÖµ
+				if ((float2Frac(a) - (float2Frac(b) >> deltaE)) > 0)  // aå°æ•°éƒ¨åˆ†å¤§äºbå°æ•°éƒ¨åˆ†,æœ€ç»ˆç»“æœåº”è¯¥ä¸ºæ­£å€¼
 				{
-					//printf("case1: Ò»ÕıÒ»¸º£¬aµÄÖ¸Êı±Èb´ó£¬ÇÒaĞ¡Êı²¿·Ö´óÓÚbĞ¡Êı²¿·Ö£¬½×Êı²»±ä£¬½á¹ûÎªÕıÖµ\n");
+					//printf("case1: ä¸€æ­£ä¸€è´Ÿï¼Œaçš„æŒ‡æ•°æ¯”bå¤§ï¼Œä¸”aå°æ•°éƒ¨åˆ†å¤§äºbå°æ•°éƒ¨åˆ†ï¼Œé˜¶æ•°ä¸å˜ï¼Œç»“æœä¸ºæ­£å€¼\n");
 					//printf("float2Frac(a): %llx\n", float2Frac(a));
 					//printf("float2Frac(b): %llx\n", float2Frac(b));
 					exponent_add = float2Exp(a);
-					unsigned long long b_frac = 0;    // ÉèÖÃÒ»¸öÁÙÊ±Öµ±£´æbµÄĞ¡Êı²¿·Ö
-					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // Óë2^24Òì»ò£¬È¡bµÄ²¹Êı,ÔÙÏû³ı×î¸ßÎ»µÄ1
+					unsigned long long b_frac = 0;    // è®¾ç½®ä¸€ä¸ªä¸´æ—¶å€¼ä¿å­˜bçš„å°æ•°éƒ¨åˆ†
+					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // ä¸2^24å¼‚æˆ–ï¼Œå–bçš„è¡¥æ•°,å†æ¶ˆé™¤æœ€é«˜ä½çš„1
 					//printf("b_frac: %llx\n", b_frac);
-					fractional_add = float2Frac(a) - (b_frac >> deltaE);   // Ğ¡µÄÊıÏÈ¶Ô½×, ×ö¼õ·¨µÃµ½Ğ¡Êı²¿·ÖµÄºÍ
+					fractional_add = float2Frac(a) - (b_frac >> deltaE);   // å°çš„æ•°å…ˆå¯¹é˜¶, åšå‡æ³•å¾—åˆ°å°æ•°éƒ¨åˆ†çš„å’Œ
 					//printf("fractional_add: %llx\n", fractional_add);
 					while (1)
 					{
@@ -216,14 +216,14 @@ float floatAdd(float a, float b)
 						else break;
 					}
 				}
-				// TODO: Î´Íê³É£¬ĞèÒª½èÎ»×ö¼õ·¨
+				
 				else if ((float2Frac(a) - (float2Frac(b) >> deltaE)) < 0)
 				{
-					//printf("case2: Ò»ÕıÒ»¸º£¬aµÄÖ¸Êı±Èb´ó£¬µ«aĞ¡Êı²¿·ÖĞ¡ÓÚbĞ¡Êı²¿·Ö£¬ĞèÒª½èÎ»¼õ·¨£¬½×Êı»á±ä£¬½á¹ûÎªÕıÖµ\n");
-					unsigned long long b_frac = 0;    // ÉèÖÃÒ»¸öÁÙÊ±Öµ±£´æbµÄĞ¡Êı²¿·Ö
-					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // Óë2^24Òì»ò£¬È¡bµÄ²¹Êı,ÔÙÏû³ı×î¸ßÎ»µÄ1
+					//printf("case2: ä¸€æ­£ä¸€è´Ÿï¼Œaçš„æŒ‡æ•°æ¯”bå¤§ï¼Œä½†aå°æ•°éƒ¨åˆ†å°äºbå°æ•°éƒ¨åˆ†ï¼Œéœ€è¦å€Ÿä½å‡æ³•ï¼Œé˜¶æ•°ä¼šå˜ï¼Œç»“æœä¸ºæ­£å€¼\n");
+					unsigned long long b_frac = 0;    // è®¾ç½®ä¸€ä¸ªä¸´æ—¶å€¼ä¿å­˜bçš„å°æ•°éƒ¨åˆ†
+					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // ä¸2^24å¼‚æˆ–ï¼Œå–bçš„è¡¥æ•°,å†æ¶ˆé™¤æœ€é«˜ä½çš„1
 					//printf("b_frac: %llx\n", b_frac);
-					fractional_add = (b_frac >> deltaE) - float2Frac(a);   // Ğ¡µÄÊıÏÈ¶Ô½×, ×ö¼õ·¨µÃµ½Ğ¡Êı²¿·ÖµÄºÍ
+					fractional_add = (b_frac >> deltaE) - float2Frac(a);   // å°çš„æ•°å…ˆå¯¹é˜¶, åšå‡æ³•å¾—åˆ°å°æ•°éƒ¨åˆ†çš„å’Œ
 					exponent_add = exponent_add - 1;
 					//printf("fractional_add: %llx\n", fractional_add);
 					while (1)
@@ -251,22 +251,22 @@ float floatAdd(float a, float b)
 				}
 				else
 				{
-					//printf("case3: Ò»ÕıÒ»¸º£¬aµÄÖ¸Êı±Èb´ó£¬ÇÒaĞ¡Êı²¿·ÖµÈÓÚbĞ¡Êı²¿·Ö£¬ĞèÒª½èÎ»¼õ·¨£¬½×Êı»á±ä£¬½á¹ûÎªÕıÖµ\n");
+					//printf("case3: ä¸€æ­£ä¸€è´Ÿï¼Œaçš„æŒ‡æ•°æ¯”bå¤§ï¼Œä¸”aå°æ•°éƒ¨åˆ†ç­‰äºbå°æ•°éƒ¨åˆ†ï¼Œéœ€è¦å€Ÿä½å‡æ³•ï¼Œé˜¶æ•°ä¼šå˜ï¼Œç»“æœä¸ºæ­£å€¼\n");
 					sign_bit_value = 0;
-					exponent_add = float2Exp(b);   // ÕâÖÖÇé¿öaÕıºÃ±Èb¶àÒ»¸ö2^exp(b)
+					exponent_add = float2Exp(b);   // è¿™ç§æƒ…å†µaæ­£å¥½æ¯”bå¤šä¸€ä¸ª2^exp(b)
 					fractional_add = 0;
 				}
 			}
-			// TODO: Ö¸ÊıÏàÍ¬£¬Á½ÕßÖ®²îºÜĞ¡£¬×îÖÕ½á¹ûµÄÖ¸ÊıÖµÈçºÎÈ¡£¿
-			else if (deltaE == 0)  // a,bÖ¸ÊıÏàÍ¬
+			
+			else if (deltaE == 0)  // a,bæŒ‡æ•°ç›¸åŒ
 			{
-				if ((float2Frac(a) - float2Frac(b)) > 0)  // aĞ¡Êı²¿·Ö´óÓÚbĞ¡Êı²¿·Ö,×îÖÕ½á¹ûÓ¦¸ÃÎªÕıÖµ
+				if ((float2Frac(a) - float2Frac(b)) > 0)  // aå°æ•°éƒ¨åˆ†å¤§äºbå°æ•°éƒ¨åˆ†,æœ€ç»ˆç»“æœåº”è¯¥ä¸ºæ­£å€¼
 				{
-					//printf("case4: Ò»ÕıÒ»¸º£¬a¡¢bÖ¸ÊıÏàÍ¬£¬ÇÒaĞ¡Êı²¿·Ö´óÓÚbĞ¡Êı²¿·Ö£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎªÕıÖµ\n");
+					//printf("case4: ä¸€æ­£ä¸€è´Ÿï¼Œaã€bæŒ‡æ•°ç›¸åŒï¼Œä¸”aå°æ•°éƒ¨åˆ†å¤§äºbå°æ•°éƒ¨åˆ†ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºæ­£å€¼\n");
 					sign_bit_value = 0;
 					exponent_add = float2Exp(a);
-					unsigned long long b_frac = 0;    // ÉèÖÃÒ»¸öÁÙÊ±Öµ±£´æbµÄĞ¡Êı²¿·Ö
-					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // Óë2^24Òì»ò£¬È¡bµÄ²¹Êı,ÔÙÏû³ı×î¸ßÎ»µÄ1
+					unsigned long long b_frac = 0;    // è®¾ç½®ä¸€ä¸ªä¸´æ—¶å€¼ä¿å­˜bçš„å°æ•°éƒ¨åˆ†
+					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // ä¸2^24å¼‚æˆ–ï¼Œå–bçš„è¡¥æ•°,å†æ¶ˆé™¤æœ€é«˜ä½çš„1
 					//printf("b_frac: %llx\n", b_frac);
 					fractional_add = float2Frac(a) - b_frac;
 					//printf("fractional_add: %llx\n", fractional_add);
@@ -293,15 +293,15 @@ float floatAdd(float a, float b)
 						else break;
 					}
 				}
-				// TODO: Î´Íê³É£¬ĞèÒª½èÎ»×ö¼õ·¨
-				else if ((float2Frac(a) - float2Frac(b)) < 0) // aĞ¡Êı²¿·ÖĞ¡ÓÚbĞ¡Êı²¿·Ö,×îÖÕ½á¹ûÓ¦¸ÃÎª¸ºÖµ
+				
+				else if ((float2Frac(a) - float2Frac(b)) < 0) // aå°æ•°éƒ¨åˆ†å°äºbå°æ•°éƒ¨åˆ†,æœ€ç»ˆç»“æœåº”è¯¥ä¸ºè´Ÿå€¼
 				{
-					//printf("case5: Ò»ÕıÒ»¸º£¬a¡¢bÖ¸ÊıÏàÍ¬£¬µ«aĞ¡Êı²¿·ÖĞ¡ÓÚbĞ¡Êı²¿·Ö£¬½×Êı»á±ä£¬½á¹ûÎª¸ºÖµ\n");
+					//printf("case5: ä¸€æ­£ä¸€è´Ÿï¼Œaã€bæŒ‡æ•°ç›¸åŒï¼Œä½†aå°æ•°éƒ¨åˆ†å°äºbå°æ•°éƒ¨åˆ†ï¼Œé˜¶æ•°ä¼šå˜ï¼Œç»“æœä¸ºè´Ÿå€¼\n");
 					sign_bit_value = 1;
 					exponent_add = float2Exp(a);
-					//fractional_add = float2Frac(b) - float2Frac(a);  // ºÍµÄĞ¡Êı²¿·ÖÓ¦Îªb-a
-					unsigned long long b_frac = 0;    // ÉèÖÃÒ»¸öÁÙÊ±Öµ±£´æbµÄĞ¡Êı²¿·Ö
-					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // Óë2^24Òì»ò£¬È¡bµÄ²¹Êı,ÔÙÏû³ı×î¸ßÎ»µÄ1
+					//fractional_add = float2Frac(b) - float2Frac(a);  // å’Œçš„å°æ•°éƒ¨åˆ†åº”ä¸ºb-a
+					unsigned long long b_frac = 0;    // è®¾ç½®ä¸€ä¸ªä¸´æ—¶å€¼ä¿å­˜bçš„å°æ•°éƒ¨åˆ†
+					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // ä¸2^24å¼‚æˆ–ï¼Œå–bçš„è¡¥æ•°,å†æ¶ˆé™¤æœ€é«˜ä½çš„1
 					//printf("b_frac: %llx\n", b_frac);
 					fractional_add = b_frac - float2Frac(a);
 					while (1)
@@ -329,26 +329,26 @@ float floatAdd(float a, float b)
 				}
 				else
 				{
-					//printf("case6: Ò»ÕıÒ»¸º£¬a¡¢bÖ¸ÊıÏàÍ¬£¬ÇÒa¡¢bĞ¡Êı²¿·ÖÏàÍ¬£¬½á¹ûÎª0\n");
+					//printf("case6: ä¸€æ­£ä¸€è´Ÿï¼Œaã€bæŒ‡æ•°ç›¸åŒï¼Œä¸”aã€bå°æ•°éƒ¨åˆ†ç›¸åŒï¼Œç»“æœä¸º0\n");
 					sign_bit_value = 0;
 					exponent_add = 0;
 					fractional_add = 0;
 				}
 			}
-			else   // aÖ¸Êı±ÈbĞ¡£¬×îÖÕ½á¹ûÎª¸ºÊı
+			else   // aæŒ‡æ•°æ¯”bå°ï¼Œæœ€ç»ˆç»“æœä¸ºè´Ÿæ•°
 			{
 
 				sign_bit_value = 1;
 				exponent_add = float2Exp(b);
-				if (((float2Frac(a) >> (-deltaE)) - float2Frac(b)) > 0)  // aÒÆÎ»ºóĞ¡Êı²¿·Ö´óÓÚbĞ¡Êı²¿·Ö
+				if (((float2Frac(a) >> (-deltaE)) - float2Frac(b)) > 0)  // aç§»ä½åå°æ•°éƒ¨åˆ†å¤§äºbå°æ•°éƒ¨åˆ†
 				{
-					//printf("case7: Ò»ÕıÒ»¸º£¬aÖ¸Êı±ÈbĞ¡£¬µ«aĞ¡Êı²¿·Ö´óÓÚbĞ¡Êı²¿·Ö£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎª¸ºÖµ\n");
+					//printf("case7: ä¸€æ­£ä¸€è´Ÿï¼ŒaæŒ‡æ•°æ¯”bå°ï¼Œä½†aå°æ•°éƒ¨åˆ†å¤§äºbå°æ•°éƒ¨åˆ†ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºè´Ÿå€¼\n");
 					//printf("float2Frac(a): %llx\n", float2Frac(a) >> (-deltaE));
 					//printf("float2Frac(b): %llx\n", float2Frac(b));
-					unsigned long long b_frac = 0;    // ÉèÖÃÒ»¸öÁÙÊ±Öµ±£´æbµÄĞ¡Êı²¿·Ö
-					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // Óë2^24Òì»ò£¬È¡bµÄ²¹Êı,ÔÙÏû³ı×î¸ßÎ»µÄ1
+					unsigned long long b_frac = 0;    // è®¾ç½®ä¸€ä¸ªä¸´æ—¶å€¼ä¿å­˜bçš„å°æ•°éƒ¨åˆ†
+					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // ä¸2^24å¼‚æˆ–ï¼Œå–bçš„è¡¥æ•°,å†æ¶ˆé™¤æœ€é«˜ä½çš„1
 					//printf("b_frac: %llx\n", b_frac);
-					fractional_add = (float2Frac(a) >> (-deltaE)) - b_frac;   // Ğ¡µÄÊıÏÈ¶Ô½×, ×ö¼õ·¨µÃµ½Ğ¡Êı²¿·ÖµÄºÍ
+					fractional_add = (float2Frac(a) >> (-deltaE)) - b_frac;   // å°çš„æ•°å…ˆå¯¹é˜¶, åšå‡æ³•å¾—åˆ°å°æ•°éƒ¨åˆ†çš„å’Œ
 					//printf("fractional_add: %llx\n", fractional_add);
 					while (1)
 					{
@@ -373,16 +373,16 @@ float floatAdd(float a, float b)
 						else break;
 					}
 				}
-				// TODO: Î´Íê³É£¬ĞèÒª½èÎ»×ö¼õ·¨
-				else if (((float2Frac(a) >> (-deltaE)) - float2Frac(b)) < 0)     // aÒÆÎ»ºóĞ¡Êı²¿·ÖĞ¡ÓÚbĞ¡Êı²¿·Ö
+				
+				else if (((float2Frac(a) >> (-deltaE)) - float2Frac(b)) < 0)     // aç§»ä½åå°æ•°éƒ¨åˆ†å°äºbå°æ•°éƒ¨åˆ†
 				{
-					//printf("case8: Ò»ÕıÒ»¸º£¬aÖ¸Êı±ÈbĞ¡£¬ÇÒaĞ¡Êı²¿·ÖĞ¡ÓÚbĞ¡Êı²¿·Ö£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎª¸ºÖµ\n");
+					//printf("case8: ä¸€æ­£ä¸€è´Ÿï¼ŒaæŒ‡æ•°æ¯”bå°ï¼Œä¸”aå°æ•°éƒ¨åˆ†å°äºbå°æ•°éƒ¨åˆ†ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºè´Ÿå€¼\n");
 					//printf("float2Frac(a): %llx\n", float2Frac(a) >> (-deltaE));
 					//printf("float2Frac(b): %llx\n", float2Frac(b));
-					unsigned long long b_frac = 0;    // ÉèÖÃÒ»¸öÁÙÊ±Öµ±£´æbµÄĞ¡Êı²¿·Ö
-					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // Óë2^24Òì»ò£¬È¡bµÄ²¹Êı,ÔÙÏû³ı×î¸ßÎ»µÄ1
+					unsigned long long b_frac = 0;    // è®¾ç½®ä¸€ä¸ªä¸´æ—¶å€¼ä¿å­˜bçš„å°æ•°éƒ¨åˆ†
+					b_frac = float2Frac(b) ^ ((long long)1 << 24) & (((long long)1 << 24) - 1);  // ä¸2^24å¼‚æˆ–ï¼Œå–bçš„è¡¥æ•°,å†æ¶ˆé™¤æœ€é«˜ä½çš„1
 					//printf("b_frac: %llx\n", b_frac);
-					fractional_add = b_frac - (float2Frac(a) >> (-deltaE));   // Ğ¡µÄÊıÏÈ¶Ô½×, ×ö¼õ·¨µÃµ½Ğ¡Êı²¿·ÖµÄºÍ
+					fractional_add = b_frac - (float2Frac(a) >> (-deltaE));   // å°çš„æ•°å…ˆå¯¹é˜¶, åšå‡æ³•å¾—åˆ°å°æ•°éƒ¨åˆ†çš„å’Œ
 					//printf("fractional_add: %llx\n", fractional_add);
 					while (1)
 					{
@@ -409,7 +409,7 @@ float floatAdd(float a, float b)
 				}
 				else
 				{
-					//printf("case9: Ò»ÕıÒ»¸º£¬aÖ¸Êı±ÈbĞ¡£¬µ«aĞ¡Êı²¿·ÖµÈÓÚbĞ¡Êı²¿·Ö£¬½×Êı»á±ä£¬½á¹ûÎª¸ºÖµ\n");
+					//printf("case9: ä¸€æ­£ä¸€è´Ÿï¼ŒaæŒ‡æ•°æ¯”bå°ï¼Œä½†aå°æ•°éƒ¨åˆ†ç­‰äºbå°æ•°éƒ¨åˆ†ï¼Œé˜¶æ•°ä¼šå˜ï¼Œç»“æœä¸ºè´Ÿå€¼\n");
 					sign_bit_value = 1;
 					exponent_add = float2Exp(a);
 					fractional_add = 0;
@@ -417,20 +417,20 @@ float floatAdd(float a, float b)
 			}
 		}
 	}
-	// TODO: Òç³öÅĞ¶Ï£¬¹æ¸ñ»¯
-	else if ((float2Sign(a) == 0) && (float2Sign(b) == 0)) // a,b¶¼ÊÇÕıÊı
+	
+	else if ((float2Sign(a) == 0) && (float2Sign(b) == 0)) // a,béƒ½æ˜¯æ­£æ•°
 	{
-		deltaE = float2Exp(a) - float2Exp(b);  // Ö¸ÊıÖ®²î
+		deltaE = float2Exp(a) - float2Exp(b);  // æŒ‡æ•°ä¹‹å·®
 		sign_bit_value = 0;
 		//printf("detlaE: %d\n", deltaE);
-		if (deltaE > 0)   // aÖ¸Êı±ÈbÖ¸ÊıĞ¡
+		if (deltaE > 0)   // aæŒ‡æ•°æ¯”bæŒ‡æ•°å°
 		{
-			//printf("case10: Á½ÕıÊı£¬aÖ¸Êı±Èb´ó£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎªÕıÖµ\n");
+			//printf("case10: ä¸¤æ­£æ•°ï¼ŒaæŒ‡æ•°æ¯”bå¤§ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºæ­£å€¼\n");
 			exponent_add = float2Exp(a);
 			fractional_add = float2Frac(a) + (float2Frac(b) >> deltaE);
 			//printf("fractional_add: %llx\n", fractional_add);
 			if (fractional_add > pow(2, 24)) {
-				fractional_add = ((fractional_add >> 1) & ((long long)1 << 24) - 1);   // Òç³öÊ±Ğ¡Êı²¿·ÖÏòÓÒÒÆÒ»Î»Í¬Ê±½«×î¸ßÎ»ÖÃ0(¹æ¸ñ»¯)
+				fractional_add = ((fractional_add >> 1) & ((long long)1 << 24) - 1);   // æº¢å‡ºæ—¶å°æ•°éƒ¨åˆ†å‘å³ç§»ä¸€ä½åŒæ—¶å°†æœ€é«˜ä½ç½®0(è§„æ ¼åŒ–)
 				exponent_add++;
 			}
 			if (exponent_add > 126) {
@@ -443,11 +443,11 @@ float floatAdd(float a, float b)
 		}
 		else
 		{
-			//printf("case11,12: Á½ÕıÊı£¬aÖ¸Êı±ÈbĞ¡»òÕßÒ»Ñù£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎªÕıÖµ\n");
+			//printf("case11,12: ä¸¤æ­£æ•°ï¼ŒaæŒ‡æ•°æ¯”bå°æˆ–è€…ä¸€æ ·ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºæ­£å€¼\n");
 			exponent_add = float2Exp(b);
 			//printf("float2Frac(a): %llx\n", float2Frac(a));
 			//printf("float2Frac(b): %llx\n", float2Frac(b));
-			fractional_add = float2Frac(b) + (float2Frac(a) >> (-deltaE));   // deltaEÎª¸ºÊı
+			fractional_add = float2Frac(b) + (float2Frac(a) >> (-deltaE));   // deltaEä¸ºè´Ÿæ•°
 			//printf("fractional_add: %llx\n", fractional_add);
 			if (fractional_add > pow(2, 24)) {
 				fractional_add = ((fractional_add >> 1) & ((long long)1 << 24) - 1);
@@ -462,14 +462,14 @@ float floatAdd(float a, float b)
 			}
 		}
 	}
-	else  // a£¬b¶¼ÊÇ¸ºÊı
+	else  // aï¼Œbéƒ½æ˜¯è´Ÿæ•°
 	{
-		deltaE = float2Exp(a) - float2Exp(b);  // Ö¸ÊıÖ®²î
+		deltaE = float2Exp(a) - float2Exp(b);  // æŒ‡æ•°ä¹‹å·®
 		sign_bit_value = 1;
 		//printf("detlaE: %d\n", deltaE);
-		if (deltaE > 0)   // aÖ¸Êı±ÈbÖ¸ÊıĞ¡
+		if (deltaE > 0)   // aæŒ‡æ•°æ¯”bæŒ‡æ•°å°
 		{
-			//printf("case13: Á½¸ºÊı£¬aÖ¸Êı±Èb´ó£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎª¸ºÖµ\n");
+			//printf("case13: ä¸¤è´Ÿæ•°ï¼ŒaæŒ‡æ•°æ¯”bå¤§ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºè´Ÿå€¼\n");
 			exponent_add = float2Exp(a);
 			fractional_add = float2Frac(a) + (float2Frac(b) >> deltaE);
 			// printf("fractional_add: %llx\n", fractional_add);
@@ -487,11 +487,11 @@ float floatAdd(float a, float b)
 		}
 		else
 		{
-			//printf("case14,15: Á½¸ºÊı£¬aÖ¸Êı±ÈbĞ¡»òÕßÒ»Ñù£¬½×Êı¿ÉÄÜ»á±ä£¬½á¹ûÎª¸ºÖµ\n");
+			//printf("case14,15: ä¸¤è´Ÿæ•°ï¼ŒaæŒ‡æ•°æ¯”bå°æˆ–è€…ä¸€æ ·ï¼Œé˜¶æ•°å¯èƒ½ä¼šå˜ï¼Œç»“æœä¸ºè´Ÿå€¼\n");
 			exponent_add = float2Exp(b);
 			// printf("float2Frac(a): %llx\n", float2Frac(a));
 			// printf("float2Frac(b): %llx\n", float2Frac(b));
-			fractional_add = float2Frac(b) + (float2Frac(a) >> (-deltaE));   // deltaEÎª¸ºÊı
+			fractional_add = float2Frac(b) + (float2Frac(a) >> (-deltaE));   // deltaEä¸ºè´Ÿæ•°
 			// printf("fractional_add: %llx\n", fractional_add);
 			if (fractional_add > pow(2, 24)) {
 				fractional_add = ((fractional_add >> 1) & ((long long)1 << 24) - 1);
